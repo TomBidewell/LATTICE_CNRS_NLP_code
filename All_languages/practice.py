@@ -1,4 +1,7 @@
-import numpy as np
+import os
+import sys
 
-a = [2,3,4,5]
-print(np.quantile(a, .25))
+os.path.join(os.path.dirname(__file__), '../')
+sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
+
+import tkinter as tk

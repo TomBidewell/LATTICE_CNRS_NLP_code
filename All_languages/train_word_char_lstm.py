@@ -158,7 +158,7 @@ def w_ch_lstm(path, train, dev, test, device):
 
         epoch_accuracy_dev = [good_pred_dev / num_pred_dev * 100]
 
-        print(epoch_accuracy_dev)
+        #print(epoch_accuracy_dev)
 
         #print("Loss on dev set at epoch %d : %f" %(epoch, dev_loss_all))
         epoch_losses_dev.append([dev_loss_all])

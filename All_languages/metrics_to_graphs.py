@@ -1,6 +1,7 @@
 import csv 
 import os
 import plotly.express as px
+import matplotlib.pyplot as plt
 import pandas as pd
 
 # assign directory
@@ -122,37 +123,44 @@ for lang in os.listdir(directory):
                     with open(model_path + '/epoch_losses_train.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        transformer_ep_loss_tr.append(float(data[-1][0]))
+                        if len(data) != 0:
+                            transformer_ep_loss_tr.append(float(data[-1][0]))
                 
                 if "epoch_losses_dev.csv" in file:
                     with open(model_path + '/epoch_losses_dev.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        transformer_ep_loss_dv.append(float(data[-1][0]))
+                        if len(data) != 0:
+                            transformer_ep_loss_dv.append(float(data[-1][0]))
 
                 if "epoch_accuracy_train.csv" in file:
                     with open(model_path + '/epoch_accuracy_train.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        transformer_ep_acc_tr.append(float(data[-1][0]))
+                        if len(data) != 0:
+                            transformer_ep_acc_tr.append(float(data[-1][0]))
 
                 if "epoch_accuracy_dev.csv" in file:
                     with open(model_path + '/epoch_accuracy_dev.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        transformer_ep_acc_dv.append(float(data[-1][0]))
+                        if len(data) != 0:
+                            transformer_ep_acc_dv.append(float(data[-1][0]))
 
                 if "test_accuracy_all.csv" in file:
                     with open(model_path + '/test_accuracy_all.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        transformer_test_acc.append(float(data[-1][0]))
+                        if len(data) != 0:
+                            transformer_test_acc.append(float(data[-1][0]))
 
                 if "test_loss_all.csv" in file:
                     with open(model_path + '/test_loss_all.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        transformer_test_loss.append(float(data[-1][0]))
+                        if len(data) != 0:
+                            transformer_test_loss.append(float(data[-1][0]))
+            
 
 #word_lstm_ep_loss_tr = word_lstm_ep_loss_tr[:len(word_lstm_ep_loss_tr)-1]
 
@@ -176,9 +184,44 @@ def get_df(name_1, list_1, name_2, list_2):
 
 
 
-scatter_plot(get_df('Transformer', transformer_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: transformer vs w_lstm')
+#scatter_plot(get_df('Transformer', transformer_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: transformer vs w_lstm')
 
-scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs w_lstm')
+#scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs w_lstm')
 
-scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs transformer')
+#scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs transformer')
 
+'''
+get_df('Transformer', transformer_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv).plot(x = 'Transformer', y = 'Word_LSTM', kind = 'scatter')
+plt.ylim(0,100)
+plt.xlim(0,100)
+plt.show()
+
+get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv).plot(x = 'Word_Char_LSTM', y = 'Word_LSTM', kind = 'scatter')
+plt.ylim(0,100)
+plt.xlim(0,100)
+plt.show()
+
+get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv).plot(x = 'Transformer', y = 'Word_Char_LSTM', kind = 'scatter')
+plt.ylim(0,100)
+plt.xlim(0,100)
+plt.show()
+
+
+df = get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv)
+
+df = df[df.Transformer < 50]
+
+print(df.head(10))
+'''
+'''
+get_df('Transformer',  transformer_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv).plot(x = 'Transformer', y = 'Transformer', kind = 'scatter')
+plt.ylim(0,100)
+plt.xlim(0,100)
+plt.show()
+'''
+
+df = get_df('Transformer_1',  transformer_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv)
+
+df = df[df.Transformer_1 < 30]
+
+print(df.head(10))

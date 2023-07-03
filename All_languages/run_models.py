@@ -35,7 +35,7 @@ path = Path(destination + "/" + model.__name__ )
 path.mkdir(parents=True)
 
 
-_, epoch_losses_train, epoch_accuracy_train, epoch_losses_dev, epoch_accuracy_dev, test_loss_all, test_accuracy_all = model(path, train, dev, test, device)
+epoch_losses_train, epoch_accuracy_train, epoch_losses_dev, epoch_accuracy_dev, test_loss_all, test_accuracy_all = model(path, train, dev, test, device)
 
 
 with open(destination + "/" + model.__name__ + "/" + "epoch_losses_train.csv", 'w', newline = '') as f:

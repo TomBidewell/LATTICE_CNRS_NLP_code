@@ -27,7 +27,7 @@ models =  [w_ch_lstm, w_lstm, transformer]
 
 
 # assign directory
-directory = '/home/tbidewell/home/POS_tagging/Data/Clean'
+directory = '/home/tbidewell/home/POS_tagging/Data/Korean'
 
 # iterate over files in
 # that directory
@@ -98,7 +98,6 @@ for lang in tqdm(os.listdir(directory), desc = 'Loading Each Language'):
         
 print("Running Training: ")
 
-
 # then run it
 
 running = {'0':-1, '1':-1}# these are the two gpus or atropos
@@ -109,8 +108,7 @@ while todo != []:
         lang_f, train,dev,test, model = todo[0]
 
         dest = lang_f.split("/")[-1]
-        destination = "/data/tbidewell/Metrics/" + dest
-        #destination = "/home/mdehouck/" + dest
+        destination = "/home/tbidewell/home/POS_tagging/Data/Korean_Metrics/" + dest
 
         todo = todo[1:]
 
@@ -120,7 +118,7 @@ while todo != []:
 
         if pid == 0:
 
-            execlp('python3.9', 'python3.9', '/home/tbidewell/home/POS_tagging/code/old/run_models.py', destination, train, dev, test, gpu, model.__name__)
+            execlp('python3.9', 'python3.9', '/home/tbidewell/home/POS_tagging/code/scripts/All_languages/run_models.py', destination, train, dev, test, gpu, model.__name__)
 
             exit()
 
@@ -145,6 +143,6 @@ wait()
 
 
 
-            
+         
        
 

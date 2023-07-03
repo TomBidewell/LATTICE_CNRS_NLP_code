@@ -7,15 +7,15 @@ from word_lstm import WORD_LSTM
 from tqdm import tqdm
 from pathlib import Path
 
-def w_lstm(path, train, dev, test, device, lstm, tree = False):
+def w_lstm(path, train, dev, test, device):
     
-    tensor_dict, len_word2id, len_label2id = word_prepared_data(train, dev, test, tree = tree)
+    tensor_dict, len_word2id, len_label2id = word_prepared_data(train, dev, test)
 
     train_input, train_gold = tensor_dict['train']
     dev_input, dev_gold = tensor_dict['dev']
     test_input, test_gold = tensor_dict['test']
 
-    '''
+    
     vocab_size = len_word2id
     num_classes = len_label2id
     embedding_size = 300
@@ -27,7 +27,7 @@ def w_lstm(path, train, dev, test, device, lstm, tree = False):
     num_epochs = 1000
 
     lstm = WORD_LSTM(vocab_size, embedding_size, num_classes, hidden_layer_size, num_layers, dropout, batch_first, bidirectional)
-    '''
+
 
     lstm.to(device)
 
@@ -109,7 +109,7 @@ def w_lstm(path, train, dev, test, device, lstm, tree = False):
         #print("Accuracy on training set at epoch %d : %f" %(epoch, np.mean(accuracy_all)))
         epoch_accuracy_train = [good_pred_train / num_pred_train * 100]
 
-        print(epoch_accuracy_train)
+        #print(epoch_accuracy_train)
         
         with torch.no_grad():
             dev_loss_all = 0
@@ -155,7 +155,7 @@ def w_lstm(path, train, dev, test, device, lstm, tree = False):
         epoch_accuracy_dev = [good_pred_dev / num_pred_dev * 100]     
         #print(epoch_accuracy_dev)
 
-        print(epoch_accuracy_dev)
+        #print(epoch_accuracy_dev)
 
         if epoch == 0:
             highest_accuracy = epoch_accuracy_dev
@@ -211,7 +211,7 @@ def w_lstm(path, train, dev, test, device, lstm, tree = False):
 
     test_accuracy_all = [good_pred_test / num_pred_test * 100]
 
-    return save_path, epoch_losses_train, [epoch_accuracy_train], epoch_losses_dev, [epoch_accuracy_dev], [[test_loss_all]], [test_accuracy_all]
+    return epoch_losses_train, [epoch_accuracy_train], epoch_losses_dev, [epoch_accuracy_dev], [[test_loss_all]], [test_accuracy_all]
 
 
 

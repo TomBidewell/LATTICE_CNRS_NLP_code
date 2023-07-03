@@ -10,33 +10,26 @@ import numpy as np
 
 
 
-def word_prepared_data(train, dev, test, tree = False):
-
-    if tree ==  False:
+def word_prepared_data(train, dev, test):
         
-        df_train = pd.read_csv(train, header = None)
-        df_train.columns = ['Sentence', 'PoS']
-        df_train.Sentence = df_train.Sentence.apply(literal_eval)
-        df_train.PoS = df_train.PoS.apply(literal_eval)
-        #df_train = df_train.head(500)
+    df_train = pd.read_csv(train, header = None)
+    df_train.columns = ['Sentence', 'PoS']
+    df_train.Sentence = df_train.Sentence.apply(literal_eval)
+    df_train.PoS = df_train.PoS.apply(literal_eval)
+    #df_train = df_train.head(500)
 
-        df_dev = pd.read_csv(dev, header = None)
-        df_dev.columns = ['Sentence', 'PoS']
-        df_dev.Sentence = df_dev.Sentence.apply(literal_eval)
-        df_dev.PoS = df_dev.PoS.apply(literal_eval)
-        #df_dev = df_dev.head(100)
+    df_dev = pd.read_csv(dev, header = None)
+    df_dev.columns = ['Sentence', 'PoS']
+    df_dev.Sentence = df_dev.Sentence.apply(literal_eval)
+    df_dev.PoS = df_dev.PoS.apply(literal_eval)
+    #df_dev = df_dev.head(100)
 
-        df_test = pd.read_csv(test, header = None)
-        df_test.columns = ['Sentence', 'PoS']
-        df_test.Sentence = df_test.Sentence.apply(literal_eval)
-        df_test.PoS = df_test.PoS.apply(literal_eval)
-        #df_test = df_test.head(100)
-    
-    else:
+    df_test = pd.read_csv(test, header = None)
+    df_test.columns = ['Sentence', 'PoS']
+    df_test.Sentence = df_test.Sentence.apply(literal_eval)
+    df_test.PoS = df_test.PoS.apply(literal_eval)
+    #df_test = df_test.head(100)
 
-        df_train = train
-        df_dev = dev
-        df_test = test
 
     counts = {}
     def get_counts(x):
