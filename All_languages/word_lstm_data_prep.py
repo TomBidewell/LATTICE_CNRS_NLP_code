@@ -69,9 +69,6 @@ def word_prepared_data(train, dev, test):
     df_train['PoS'].apply(lambda x: create_label_ids(x))
 
     
-        
-    
-
 
     #encoding sentences and PoS tags
 

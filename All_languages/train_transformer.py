@@ -86,9 +86,9 @@ def transformer(path, train, dev, test, device):
         epoch_losses_train.append([epoch_loss])
         
         #print("Accuracy on training set at epoch %d : %f" %(epoch, np.mean(accuracy_all)))
-        epoch_accuracy_train = [good_pred_train / num_pred_train * 100]
+        epoch_accuracy_train.append([good_pred_train / num_pred_train * 100])
 
-        print("Train: ", epoch_accuracy_train)
+        #print("Train: ", epoch_accuracy_train)
         
         
         with torch.no_grad():
@@ -129,23 +129,25 @@ def transformer(path, train, dev, test, device):
 
     
         #print("Accuracy on dev set at epoch %d : %f" %(epoch, np.mean(dev_accuracy_all)))
-        epoch_accuracy_dev = [good_pred_dev / num_pred_dev * 100]
-        print("Dev: ", epoch_accuracy_dev)
+        dev_acc = [good_pred_dev / num_pred_dev * 100]
+        epoch_accuracy_dev.append(dev_acc)
+        #print("Dev: ", epoch_accuracy_dev)
     
         if epoch == 0:
-            highest_accuracy = epoch_accuracy_dev
+            highest_accuracy = dev_acc
             decrease_counter = 0
             torch.save(roberta_pos.state_dict(), save_path)
         else:
-            if highest_accuracy > epoch_accuracy_dev:
+            if highest_accuracy > dev_acc:
                 decrease_counter += 1
                 if decrease_counter > 10:
                     break
             else:
-                highest_accuracy = epoch_accuracy_dev
+                highest_accuracy = dev_acc
                 decrease_counter = 0
                 torch.save(roberta_pos.state_dict(), save_path)
 
+    roberta_pos.load_state_dict(torch.load(save_path))
 
     with torch.no_grad():
       test_loss_all = 0
@@ -179,21 +181,9 @@ def transformer(path, train, dev, test, device):
 
         good_pred_test += (pred_test_labels.to(device) == y_test).mul(mask_test).int().sum().item()
 
-        # prediction and accuracy on the dev set
-        #pred_test_labels = torch.argmax(log_test_probs, dim=1)
-
-        #test_mask = y_test != -100
-                
-        #y_test = y_test[test_mask]
-        #pred_test_labels = pred_test_labels[test_mask]
-
-        
-        #test_accuracy = (torch.sum((pred_test_labels.to(device) == y_test).int()).item()) / (test_mask.int().sum().cpu().numpy())
-
-        #test_accuracy_all.append(test_accuracy * 100)
     test_accuracy_all = [good_pred_test / num_pred_test * 100]
     
-    return epoch_losses_train, [epoch_accuracy_train[: -10]], epoch_losses_dev, [highest_accuracy], [[test_loss_all]], [test_accuracy_all]
+    return [epoch_losses_train[-10]], [epoch_accuracy_train[-10]], [epoch_losses_dev[-10]], [highest_accuracy], [[test_loss_all]], [test_accuracy_all]
 
 
 

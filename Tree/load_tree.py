@@ -17,13 +17,13 @@ from All_languages.roberta_POS import ROBERTA
 
 
 
-with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/linkage_matrix", "rb") as fp_tree:
+with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/linkage_matrix_trial", "rb") as fp_tree:
     link_mat = pickle.load(fp_tree)
 
-with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/id2lang", "rb") as fp_id2lang:
+with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/id2lang_trial", "rb") as fp_id2lang:
     id2lang = pickle.load(fp_id2lang)
 
-with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/lang_dict", "rb") as fp_lang_dict:
+with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/lang_dict_trial", "rb") as fp_lang_dict:
     lang_dict = pickle.load(fp_lang_dict)
 
 
@@ -85,7 +85,7 @@ def get_list_leaves(x, parent_id):
         random.Random(2).shuffle(dev_tag)
         random.Random(3).shuffle(test_sent)
         random.Random(3).shuffle(test_tag)
-
+        
         path = Path(directory + "/" + folder_name)
         path.mkdir(parents=True)
 

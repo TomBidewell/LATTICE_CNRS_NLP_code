@@ -5,24 +5,37 @@ PYTHON = 'python3.9'
 #PYTHON = 'python3'
 
 
-treedir = argv[1]
+treedir = '/data/mdehouck/model_irrelevance/families'
+#treedir = '/data/tbidewell/Tree'
 
 # first prepare the parameters of the code you want to run
 trains = {}
 devs = {}
-for f in listdir(treedir):
+for file in listdir(treedir):
 
-    if 'train.numed' in f:
-        fam, par, cur = f.split('-')[0].split('_')
-        trains[fam, int(par), int(cur)] = treedir + f
-    elif 'dev.numed' in f:
-        fam, par, cur = f.split('-')[0].split('_')
-        devs[fam, int(par), int(cur)] = treedir + f
+    '''
+    for f in listdir(treedir + "/" + file):
+        if 'train' in f:
+            fam, par, cur = file.split('_')
+            trains[fam, int(par), int(cur)] = treedir + "/" + file + "/" + f
+        elif 'dev' in f:
+            fam, par, cur = file.split('_')
+            devs[fam, int(par), int(cur)] = treedir + "/" + file + "/" + f
+    '''
+
+    if 'train.numed' in file:
+        fam, par, cur = file.split('-')[0].split('_')
+        trains[fam, int(par), int(cur)] = treedir + file 
+
+    elif 'dev.numed' in file:
+        fam, par, cur = file.split('-')[0].split('_')
+        devs[fam, int(par), int(cur)] = treedir + file 
 
 
 todo = []
 children = {}
-for k, v in sorted(trains.items()):
+for k, v in sorted(trains.items(), reverse = True):
+
     if k not in devs:
         continue
 
@@ -36,11 +49,15 @@ for k, v in sorted(trains.items()):
             children[k[0], k[1], mod].append((k, v, devs[k], mod))
             children[k[0], k[2], mod] = []
 
+print(todo)
+print(children)
+
 for k, v in sorted(children.items()):
     if len(v) == 0:
         del(children[k])
 
 
+'''
 # then run it
 running = {'0':-1, '1':-1}# these are the two gpus on atropos
 #running = {'1':-1}
@@ -74,14 +91,14 @@ while todo != [] or len(children) != 0:
                         parent = 'NIL'
                     else:
                         parent = 'models/' + parent + '_charlstm_last'
-                    execlp(PYTHON, PYTHON, 'train_mi_lstm_tree.py', train, '-f', out, '-g', gpu, '-c', '-p', parent)
+                    #execlp(PYTHON, PYTHON, 'train_mi_lstm_tree.py', train, '-f', out, '-g', gpu, '-c', '-p', parent)
                 else:
                     out = 'results/' + this + '_lstm'
                     if bits[1] == '0':
                         parent = 'NIL'
                     else:
                         parent = 'models/' + parent + '_lstm_last'
-                    execlp(PYTHON, PYTHON, 'train_mi_lstm_tree.py', train, '-f', out, '-g', gpu, '-p', parent)
+                    #execlp(PYTHON, PYTHON, 'train_mi_lstm_tree.py', train, '-f', out, '-g', gpu, '-p', parent)
                 #print('running', k, mod)
 
                 s = [i for i in range(1000000)]
@@ -116,6 +133,6 @@ while todo != [] or len(children) != 0:
             running['0'] = -1
         elif running['1'] == pid:
             running['1'] = -1
-
+'''
             
         

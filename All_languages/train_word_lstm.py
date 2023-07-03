@@ -171,6 +171,7 @@ def w_lstm(path, train, dev, test, device):
                 decrease_counter = 0
                 torch.save(lstm.state_dict(), save_path)
 
+    lstm.load_state_dict(torch.load(save_path))
         
     with torch.no_grad():
         test_loss_all = 0

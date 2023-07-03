@@ -27,7 +27,7 @@ models =  [w_ch_lstm, w_lstm, transformer]
 
 
 # assign directory
-directory = '/home/tbidewell/home/POS_tagging/Data/Korean'
+directory = '/home/tbidewell/home/POS_tagging/Data/Clean'
 
 # iterate over files in
 # that directory
@@ -108,7 +108,7 @@ while todo != []:
         lang_f, train,dev,test, model = todo[0]
 
         dest = lang_f.split("/")[-1]
-        destination = "/home/tbidewell/home/POS_tagging/Data/Korean_Metrics/" + dest
+        destination = "/home/tbidewell/home/POS_tagging/Data/Metrics/" + dest
 
         todo = todo[1:]
 

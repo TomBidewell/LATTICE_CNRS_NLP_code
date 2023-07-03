@@ -180,7 +180,8 @@ def w_ch_lstm(path, train, dev, test, device):
                 highest_accuracy = epoch_accuracy_dev
                 decrease_counter = 0
                 torch.save(lstm_word_n_char.state_dict(), save_path)
-        
+    
+    lstm_word_n_char.load_state_dict(torch.load(save_path))
 
     with torch.no_grad():
       test_loss_all = 0
