@@ -103,8 +103,6 @@ def w_ch_lstm(path, train, dev, test, device):
 
         epoch_accuracy_train = [good_pred_train / num_pred_train * 100]
 
-        print(epoch_accuracy_train)
-
         #print("Average Loss on training set at epoch %d : %f" %(epoch, epoch_loss))
         epoch_losses_train.append([epoch_loss])
         
@@ -221,7 +219,7 @@ def w_ch_lstm(path, train, dev, test, device):
         #test_accuracy_all.append(test_accuracy * 100)
     test_accuracy_all = [good_pred_test / num_pred_test * 100]
     
-    return epoch_losses_train, [epoch_accuracy_train], epoch_losses_dev, [epoch_accuracy_dev], [[test_loss_all]], [test_accuracy_all]
+    return epoch_losses_train, [epoch_accuracy_train], epoch_losses_dev, [highest_accuracy], [[test_loss_all]], [test_accuracy_all]
 
 
         

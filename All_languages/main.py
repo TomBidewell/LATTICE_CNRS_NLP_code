@@ -98,6 +98,7 @@ for lang in tqdm(os.listdir(directory), desc = 'Loading Each Language'):
         
 print("Running Training: ")
 
+
 # then run it
 
 running = {'0':-1, '1':-1}# these are the two gpus or atropos

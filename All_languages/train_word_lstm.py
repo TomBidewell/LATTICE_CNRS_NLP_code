@@ -212,7 +212,7 @@ def w_lstm(path, train, dev, test, device):
 
     test_accuracy_all = [good_pred_test / num_pred_test * 100]
 
-    return epoch_losses_train, [epoch_accuracy_train], epoch_losses_dev, [epoch_accuracy_dev], [[test_loss_all]], [test_accuracy_all]
+    return epoch_losses_train, [epoch_accuracy_train], epoch_losses_dev, [highest_accuracy], [[test_loss_all]], [test_accuracy_all]
 
 
 

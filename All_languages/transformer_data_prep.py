@@ -140,7 +140,7 @@ def transformer_data_prep(train, dev, test):
             if label in label2id:
                 encoded_pos.append(label2id[label])
             else:
-                return np.nan
+                encoded_pos.append(-100) #return np.nan
         encoded_pos.append(label2id['EOS'])
         while len(encoded_pos) < MAX_LEN:
             encoded_pos.append(-100)
@@ -151,9 +151,9 @@ def transformer_data_prep(train, dev, test):
     df_test['PoS'] = df_test['PoS'].apply(lambda x: encode_POS(x))
 
 
-    df_train = df_train[df_train['PoS'].notna()]
-    df_dev = df_dev[df_dev['PoS'].notna()]
-    df_test = df_test[df_test['PoS'].notna()]
+    #df_train = df_train[df_train['PoS'].notna()]
+    #df_dev = df_dev[df_dev['PoS'].notna()]
+    #df_test = df_test[df_test['PoS'].notna()]
 
 
     gold_class_train_tensor = torch.stack(df_train.PoS.values.tolist())

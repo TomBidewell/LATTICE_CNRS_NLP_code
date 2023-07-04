@@ -88,7 +88,7 @@ def transformer(path, train, dev, test, device):
         #print("Accuracy on training set at epoch %d : %f" %(epoch, np.mean(accuracy_all)))
         epoch_accuracy_train.append([good_pred_train / num_pred_train * 100])
 
-        #print("Train: ", epoch_accuracy_train)
+        print("Train: ", [good_pred_train / num_pred_train * 100])
         
         
         with torch.no_grad():
@@ -131,7 +131,7 @@ def transformer(path, train, dev, test, device):
         #print("Accuracy on dev set at epoch %d : %f" %(epoch, np.mean(dev_accuracy_all)))
         dev_acc = [good_pred_dev / num_pred_dev * 100]
         epoch_accuracy_dev.append(dev_acc)
-        #print("Dev: ", epoch_accuracy_dev)
+        print("Dev: ", dev_acc)
     
         if epoch == 0:
             highest_accuracy = dev_acc

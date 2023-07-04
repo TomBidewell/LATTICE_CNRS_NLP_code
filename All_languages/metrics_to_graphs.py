@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # assign directory
-directory = '/data/tbidewell/Metrics'
+directory = '/home/tbidewell/home/POS_tagging/Data/Metrics'
  
 # iterate over files in
 # that directory
@@ -184,13 +184,14 @@ def get_df(name_1, list_1, name_2, list_2):
 
 
 
-#scatter_plot(get_df('Transformer', transformer_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: transformer vs w_lstm')
+scatter_plot(get_df('Transformer', transformer_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: transformer vs w_lstm')
 
-#scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs w_lstm')
+scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs w_lstm')
 
-#scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs transformer')
+scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs transformer')
 
 '''
+
 get_df('Transformer', transformer_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv).plot(x = 'Transformer', y = 'Word_LSTM', kind = 'scatter')
 plt.ylim(0,100)
 plt.xlim(0,100)
@@ -205,23 +206,15 @@ get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Transformer',  transformer_e
 plt.ylim(0,100)
 plt.xlim(0,100)
 plt.show()
+'''
 
 
-df = get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv)
+df = get_df('Transformer', transformer_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv)
 
 df = df[df.Transformer < 50]
+print(df.head)
 
-print(df.head(10))
-'''
-'''
-get_df('Transformer',  transformer_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv).plot(x = 'Transformer', y = 'Transformer', kind = 'scatter')
-plt.ylim(0,100)
-plt.xlim(0,100)
-plt.show()
-'''
+df = get_df('Transformer', transformer_ep_acc_dv, 'Word_Char_2',  word_char_lstm_ep_acc_dv)
 
-df = get_df('Transformer_1',  transformer_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv)
-
-df = df[df.Transformer_1 < 30]
-
-print(df.head(10))
+df = df[df.Transformer < 50]
+print(df.head)
