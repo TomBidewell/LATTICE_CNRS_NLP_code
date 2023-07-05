@@ -32,7 +32,7 @@ def w_lstm(path, train, dev, test, device):
     bidirectional = True
     batch_first = True
     dropout = 0.5
-    num_epochs = 10
+    num_epochs = 1000
 
     lstm = WORD_LSTM(vocab_size, embedding_size, num_classes, hidden_layer_size, num_layers, dropout, batch_first, bidirectional)
 

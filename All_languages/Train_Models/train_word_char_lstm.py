@@ -34,7 +34,7 @@ def w_ch_lstm(path, train, dev, test, device):
     hidden_layer_size_word = 300
     num_layers = 2
     dropout = 0.5
-    num_epochs = 10
+    num_epochs = 1000
 
 
     lstm_word_n_char = LSTM_WORD_CHAR(vocab_size, char_size, embedding_size_char, embedding_size_word, num_classes, hidden_layer_size_char, hidden_layer_size_word, num_layers, device, dropout)

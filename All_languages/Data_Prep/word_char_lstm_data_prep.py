@@ -16,19 +16,19 @@ def word_char_prepared_data(train, dev, test):
     df_train.columns = ['Sentence', 'PoS']
     df_train["Sentence"] = df_train["Sentence"].apply(lambda x: x[2:-2].split("', '"))
     df_train['PoS'] = df_train['PoS'].apply(lambda x: x[2:-2].split("', '"))
-    #df_train = df_train.head(500)
+    df_train = df_train.head(500)
 
     df_dev = pd.read_csv(dev, header = None)
     df_dev.columns = ['Sentence', 'PoS']
     df_dev['Sentence'] = df_dev['Sentence'].apply(lambda x: x[2:-2].split("', '"))
     df_dev['PoS'] = df_dev['PoS'].apply(lambda x: x[2:-2].split("', '"))
-    #df_dev = df_dev.head(100)
+    df_dev = df_dev.head(100)
 
     df_test = pd.read_csv(test, header = None)
     df_test.columns = ['Sentence', 'PoS']
     df_test['Sentence'] = df_test['Sentence'].apply(lambda x: x[2:-2].split("', '"))
     df_test['PoS'] = df_test['PoS'].apply(lambda x: x[2:-2].split("', '"))
-    #df_test = df_test.head(100)
+    df_test = df_test.head(100)
 
     
     #creating indices for the vocab
