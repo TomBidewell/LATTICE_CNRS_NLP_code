@@ -2,10 +2,15 @@ import csv
 import torch
 from pathlib import Path
 import sys
+import os
 import torch
-from All_languages.Train_Models.train_word_char_lstm import w_ch_lstm
-from All_languages.Train_Models.train_word_lstm import w_lstm
-from All_languages.Train_Models.train_transformer import transformer
+
+os.path.join(os.path.dirname(__file__), '../')
+sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
+
+from Train_Models.train_word_char_lstm import w_ch_lstm
+from Train_Models.train_word_lstm import w_lstm
+from Train_Models.train_transformer import transformer
 from tqdm import tqdm
 from torch import manual_seed
 from random import seed
@@ -33,6 +38,7 @@ model = models[model]
 
 path = Path(destination + "/" + model.__name__ )
 path.mkdir(parents=True)
+
 
 
 epoch_losses_train, epoch_accuracy_train, epoch_losses_dev, epoch_accuracy_dev, test_loss_all, test_accuracy_all = model(path, train, dev, test, device)

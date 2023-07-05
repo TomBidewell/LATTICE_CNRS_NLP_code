@@ -45,7 +45,7 @@ def w_lstm(path, parent_model, train, dev, test, device):
         lstm.load_state_dict(torch.load(parent_model))
     print("After loading old")
 
-    #lstm.half()
+    lstm.half()
     lstm.to(device)
 
     save_path = path / lstm.__class__.__name__ 

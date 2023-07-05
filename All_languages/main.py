@@ -5,12 +5,15 @@ import csv
 from pathlib import Path
 from tqdm import tqdm
 from os import execlp, fork, wait
-from All_languages.Train_Models.train_word_char_lstm import w_ch_lstm
-from All_languages.Train_Models.train_word_lstm import w_lstm
-from All_languages.Train_Models.train_transformer import transformer
 
 os.path.join(os.path.dirname(__file__), '../')
 sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
+
+from Train_Models.train_word_char_lstm import w_ch_lstm
+from Train_Models.train_word_lstm import w_lstm
+from Train_Models.train_transformer import transformer
+
+
 
 
 def load_conllu(filename):
@@ -23,11 +26,11 @@ def load_conllu(filename):
 
 
 todo = []
-models =  [w_ch_lstm, w_lstm, transformer]
+models =  [w_ch_lstm, w_lstm] #[w_ch_lstm, w_lstm, transformer]
 
 
 # assign directory
-directory = '/home/tbidewell/home/POS_tagging/Data/Clean'
+directory = '/home/tbidewell/home/POS_tagging/Data/Trial'
 
 # iterate over files in
 # that directory
@@ -109,7 +112,7 @@ while todo != []:
         lang_f, train,dev,test, model = todo[0]
 
         dest = lang_f.split("/")[-1]
-        destination = "/home/tbidewell/home/POS_tagging/Data/Metrics/" + dest
+        destination = "/home/tbidewell/home/POS_tagging/Data/Trial_Metrics/" + dest
 
         todo = todo[1:]
 
@@ -119,7 +122,7 @@ while todo != []:
 
         if pid == 0:
 
-            execlp('python3.9', 'python3.9', '/home/tbidewell/home/POS_tagging/code/scripts/All_languages/run_models.py', destination, train, dev, test, gpu, model.__name__)
+            execlp('python3.9', 'python3.9', '/home/tbidewell/home/POS_tagging/code/scripts/All_languages/Run/run_models.py', destination, train, dev, test, gpu, model.__name__)
 
             exit()
 
@@ -144,6 +147,6 @@ wait()
 
 
 
-         
+      
        
 

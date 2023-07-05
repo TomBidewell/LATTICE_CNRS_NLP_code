@@ -5,6 +5,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
+import plotext as plt
+
 
 
 
@@ -28,7 +30,9 @@ def word_char_prepared_data(train, dev, test):
     df_test['PoS'] = df_test['PoS'].apply(lambda x: x[2:-2].split("', '"))
     #df_test = df_test.head(100)
 
+    
     #creating indices for the vocab
+
     char2id = { 'PAD': 0,
             'UNK': 1,
             }
@@ -43,12 +47,28 @@ def word_char_prepared_data(train, dev, test):
     counts = {}
     def get_counts(x):
         for w in x:
-            try: 
+            if w.lower() in counts:
                 counts[w.lower()] += 1
-            except:
+            else:
                 counts[w.lower()] = 1
 
     df_train['Sentence'].apply(lambda x: get_counts(x))
+
+
+    char_counts = {}
+    def get_char_counts(x):
+        for w in x:
+            for c in w:
+                if c.lower() in char_counts:
+                    char_counts[c.lower()] += 1
+                else:
+                    char_counts[c.lower()] = 1
+
+    df_train['Sentence'].apply(lambda x: get_char_counts(x))
+
+    lengths = np.array(list(char_counts.values()))
+    min_frequency = np.quantile(lengths, 0.25)
+
 
     def create_char_ids(x):
         for token in x:
@@ -109,7 +129,10 @@ def word_char_prepared_data(train, dev, test):
 
                 for char in word:
                     if char in char2id:
-                        word_char.append(char2id[char])
+                        if char_counts[char] < min_frequency:
+                            word_char.append(char2id['UNK'])
+                        else:
+                            word_char.append(char2id[char])
                     else:
                         word_char.append(char2id['UNK'])
                 
@@ -129,7 +152,10 @@ def word_char_prepared_data(train, dev, test):
 
                 for char in word:
                     if char in char2id:
-                        word_char.append(char2id[char])
+                        if char_counts[char] < min_frequency:
+                            word_char.append(char2id['UNK'])
+                        else:
+                            word_char.append(char2id[char])
                     else:
                         word_char.append(char2id['UNK'])
                 
@@ -210,8 +236,8 @@ def word_char_prepared_data(train, dev, test):
     df_dev['Encoded_Sentence_Char'].apply(lambda x: find_char_len(x))
     df_test['Encoded_Sentence_Char'].apply(lambda x: find_char_len(x))
 
-    max_char_len = max(max_len_char)
 
+    max_char_len = max(max_len_char)
 
     def padding_words(x):
         for word in x:
@@ -221,6 +247,7 @@ def word_char_prepared_data(train, dev, test):
     df_train['Encoded_Sentence_Char'].apply(lambda x: padding_words(x))
     df_dev['Encoded_Sentence_Char'].apply(lambda x: padding_words(x))
     df_test['Encoded_Sentence_Char'].apply(lambda x: padding_words(x))
+
 
     #get inputs and gold classes
     def convert2tensors(df):
@@ -276,6 +303,7 @@ def word_char_prepared_data(train, dev, test):
             'dev' : [dev_input_word, dev_input_char, dev_gold],
             'test': [test_input_word, test_input_char, test_gold],
         }
+ 
 
     return tensor_dict, len(word2id), len(char2id), len(label2id)
 

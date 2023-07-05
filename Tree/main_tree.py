@@ -43,21 +43,15 @@ for lang, data in data_per_lang.items():
     df_data = pd.DataFrame(list(zip(data[0], data[1])), columns = ['Sentence', 'POS'])
     df = pd.concat([df,df_data])
 
-print(df.head())
-
 counts = {}
 def get_counts(x):
     for w in x:
-        #print(w)
         try: 
             counts[w.lower()] += 1
         except:
             counts[w.lower()] = 1
 
 df['Sentence'].apply(lambda x: get_counts(x))
-
-
-
 
 
 #creating indices for the vocab
@@ -73,13 +67,11 @@ def create_word_ids(x):
     for token in x:
         token = token.lower()
         if token not in word2id:
-            '''
             if counts[token] == 1:
                 word2id[token] = word2id['UNK']
             else:
                 word2id[token] = len(word2id)
-                '''
-            word2id[token] = len(word2id)
+                
 
 def create_label_ids(x):
     for label in x:

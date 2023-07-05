@@ -1,7 +1,5 @@
-import os
-import sys
-
-os.path.join(os.path.dirname(__file__), '../')
-sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
-
-import tk as tk
+import plotext as plt
+y = plt.sin() # sinusoidal signal 
+plt.scatter(y)
+plt.title("Scatter Plot")
+plt.show()

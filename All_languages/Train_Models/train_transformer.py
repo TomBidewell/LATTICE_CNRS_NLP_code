@@ -1,10 +1,16 @@
-from All_languages.Data_Prep.transformer_data_prep import transformer_data_prep
-from All_languages.Models.roberta_POS import ROBERTA
 from transformers import XLMRobertaConfig,  XLMRobertaModel
 from torch import nn, optim
 import torch
 import numpy as np
 from tqdm import tqdm
+import os 
+import sys
+
+os.path.join(os.path.dirname(__file__), '../')
+sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
+
+from Data_Prep.transformer_data_prep import transformer_data_prep
+from Models.roberta_POS import ROBERTA
 
 
 def transformer(path, train, dev, test, device):

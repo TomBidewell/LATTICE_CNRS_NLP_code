@@ -2,10 +2,18 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
-from All_languages.Data_Prep.word_char_lstm_data_prep import word_char_prepared_data
-from All_languages.Models.word_char_lstm import LSTM_WORD_CHAR
 from tqdm import tqdm
 from pathlib import Path
+import os 
+import sys
+
+os.path.join(os.path.dirname(__file__), '../')
+sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
+
+
+from Data_Prep.word_char_lstm_data_prep import word_char_prepared_data
+from Models.word_char_lstm import LSTM_WORD_CHAR
+
 
 def w_ch_lstm(path, train, dev, test, device):
 
@@ -26,7 +34,7 @@ def w_ch_lstm(path, train, dev, test, device):
     hidden_layer_size_word = 300
     num_layers = 2
     dropout = 0.5
-    num_epochs = 1000
+    num_epochs = 10
 
 
     lstm_word_n_char = LSTM_WORD_CHAR(vocab_size, char_size, embedding_size_char, embedding_size_word, num_classes, hidden_layer_size_char, hidden_layer_size_word, num_layers, device, dropout)

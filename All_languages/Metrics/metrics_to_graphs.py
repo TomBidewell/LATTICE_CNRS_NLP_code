@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # assign directory
-directory = '/home/tbidewell/home/POS_tagging/Data/Metrics'
+directory = '/home/tbidewell/home/POS_tagging/Data/Trial_Metrics'
  
 # iterate over files in
 # that directory
@@ -184,11 +184,11 @@ def get_df(name_1, list_1, name_2, list_2):
 
 
 
-scatter_plot(get_df('Transformer', transformer_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: transformer vs w_lstm')
+#scatter_plot(get_df('Transformer', transformer_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: transformer vs w_lstm')
 
-scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs w_lstm')
+#scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs w_lstm')
 
-scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs transformer')
+#scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs transformer')
 
 
 '''
@@ -209,9 +209,9 @@ plt.show()
 
 '''
 
-df_trans_word = get_df('Transformer', transformer_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv)
+#df_trans_word = get_df('Transformer', transformer_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv)
 
-df_trans_char = get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv)
+#df_trans_char = get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv)
 
 df_word_char = get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv)
 
@@ -219,8 +219,8 @@ df_word_char = get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Word_LSTM',  
 
 
 
-print(df_trans_word['Transformer'].corr(df_trans_word['Word_LSTM']))
+#print(df_trans_word['Transformer'].corr(df_trans_word['Word_LSTM']))
 
-print(df_trans_char['Transformer'].corr(df_trans_char['Word_Char_LSTM']))
+#print(df_trans_char['Transformer'].corr(df_trans_char['Word_Char_LSTM']))
 
-print(df_word_char['Word_Char_LSTM'].corr(df_word_char['Word_LSTM']))
+print(df_word_char.head())
