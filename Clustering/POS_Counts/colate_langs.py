@@ -143,11 +143,11 @@ X = csr_matrix(lang_count)
 svd = TruncatedSVD(n_components = 100)
 X_new = svd.fit_transform(X)
 
-with open("lang_counts_trial", "wb") as fp:   #Pickling
+with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/lang_counts_trial", "wb") as fp:   #Pickling
     pickle.dump(X_new, fp)
 
-with open("id2lang_trial", "wb") as fid2lang_p:   #Pickling
+with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/id2lang_trial", "wb") as fid2lang_p:   #Pickling
     pickle.dump(id2lang, fid2lang_p)
     
-with open("lang_dict_trial", "wb") as lang_dict_fp:   #Pickling
+with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/lang_dict_trial", "wb") as lang_dict_fp:   #Pickling
     pickle.dump(lang_dict, lang_dict_fp)

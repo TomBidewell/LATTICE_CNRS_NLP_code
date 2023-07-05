@@ -34,7 +34,7 @@ for file in listdir(treedir):
 
 todo = []
 children = {}
-for k, v in sorted(trains.items(), reverse = True):
+for k, v in sorted(trains.items()):
 
     if k not in devs:
         continue
@@ -49,21 +49,22 @@ for k, v in sorted(trains.items(), reverse = True):
             children[k[0], k[1], mod].append((k, v, devs[k], mod))
             children[k[0], k[2], mod] = []
 
-print(todo)
-print(children)
+#print(children)
 
 for k, v in sorted(children.items()):
     if len(v) == 0:
         del(children[k])
 
 
-'''
+
 # then run it
 running = {'0':-1, '1':-1}# these are the two gpus on atropos
 #running = {'1':-1}
 procs = {}
 done = set()
 
+print(todo)
+'''
 while todo != [] or len(children) != 0:
 
     if len(todo) != 0 and -1 in running.values(): # there at least one free GPU (for me)
@@ -79,6 +80,7 @@ while todo != [] or len(children) != 0:
         
             if pid == 0:
                 # run you new code in the child process
+                print(train)
 
                 bits = train.split('/')[-1].split('-')[0].split('_')
                 this = bits[0] + '_' + bits[-1]
@@ -92,6 +94,7 @@ while todo != [] or len(children) != 0:
                     else:
                         parent = 'models/' + parent + '_charlstm_last'
                     #execlp(PYTHON, PYTHON, 'train_mi_lstm_tree.py', train, '-f', out, '-g', gpu, '-c', '-p', parent)
+                    exit()
                 else:
                     out = 'results/' + this + '_lstm'
                     if bits[1] == '0':
@@ -99,6 +102,7 @@ while todo != [] or len(children) != 0:
                     else:
                         parent = 'models/' + parent + '_lstm_last'
                     #execlp(PYTHON, PYTHON, 'train_mi_lstm_tree.py', train, '-f', out, '-g', gpu, '-p', parent)
+                    exit()
                 #print('running', k, mod)
 
                 s = [i for i in range(1000000)]
@@ -133,6 +137,6 @@ while todo != [] or len(children) != 0:
             running['0'] = -1
         elif running['1'] == pid:
             running['1'] = -1
-'''
+
             
-        
+        '''

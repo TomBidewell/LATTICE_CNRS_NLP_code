@@ -5,9 +5,9 @@ import csv
 from pathlib import Path
 from tqdm import tqdm
 from os import execlp, fork, wait
-from train_word_char_lstm import w_ch_lstm
-from train_word_lstm import w_lstm
-from train_transformer import transformer
+from All_languages.Train_Models.train_word_char_lstm import w_ch_lstm
+from All_languages.Train_Models.train_word_lstm import w_lstm
+from All_languages.Train_Models.train_transformer import transformer
 
 os.path.join(os.path.dirname(__file__), '../')
 sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
