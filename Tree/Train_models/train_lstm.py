@@ -40,12 +40,10 @@ def w_lstm(path, parent_model, train, dev, test, device):
     num_epochs = 1
 
     lstm = WORD_LSTM(vocab_size, embedding_size, num_classes, hidden_layer_size, num_layers, dropout, batch_first, bidirectional)
-    print("Here")
+    
     if parent_model != 'NIL':
         lstm.load_state_dict(torch.load(parent_model))
-    print("After loading old")
 
-    lstm.half()
     lstm.to(device)
 
     save_path = path / lstm.__class__.__name__ 
@@ -61,7 +59,7 @@ def w_lstm(path, parent_model, train, dev, test, device):
     epoch_accuracy_dev = []
 
     # loop on epochs
-    for epoch in tqdm(range(num_epochs), total = num_epochs, desc = 'Word LSTM: ') :
+    for epoch in range(num_epochs): #tqdm(range(num_epochs), total = num_epochs, desc = 'Word LSTM: ') :
         #print("Epoch", epoch)
         epoch_loss = 0
 
@@ -69,40 +67,19 @@ def w_lstm(path, parent_model, train, dev, test, device):
         good_pred_train = 0
         
     
-        for X, y in zip(train_input, train_gold):
-
-            print(X)
-            print(y)
-        
+        for X, y in tqdm(zip(train_input, train_gold), total = len(train_input)):
+       
             X = X.to(device)
             y = y.to(device)
 
-            #shuffle data
-            #permutation = torch.randperm(X.size()[0])
-            #X = X[permutation]
-            #y = y[permutation]
                 
             lstm.zero_grad()
 
             log_probs = lstm(X)
-                
-            """
-            my y.shape = batch_size x seq_len
-            
-            my log_probs.shape = batch_size x seq_len x num_classes
-            
-            looking it up: NLLLoss takes input batch_size x num_classes x seq_len 
-            
-            so transpose the last two dimensions
-            """
             
             log_probs = log_probs.transpose(1, 2)
 
-            print(y)
-
             loss = loss_function(log_probs, y)
-
-            print(loss)
 
             loss = loss.half()
             
@@ -120,20 +97,13 @@ def w_lstm(path, parent_model, train, dev, test, device):
 
             good_pred_train += (pred_labels.to(device) == y).mul(mask_train).int().sum().item()
                     
-            # prediction and accuracy on the dev set
-            #pred_labels = torch.argmax(log_probs, dim=1)
-            
-            #accuracy = (torch.sum((pred_labels.to(device) == y).int()).item()) / (pred_labels.shape[0]*pred_labels.shape[1])
-            
-            #accuracy_all.append(accuracy * 100)
-
-        #print("Average Loss on training set at epoch %d : %f" %(epoch, epoch_loss))
+           
         epoch_losses_train.append([epoch_loss])
         
         #print("Accuracy on training set at epoch %d : %f" %(epoch, np.mean(accuracy_all)))
         epoch_accuracy_train = [good_pred_train / num_pred_train * 100]
 
-        #print(epoch_accuracy_train)
+        print(epoch_accuracy_train)
         
         with torch.no_grad():
             dev_loss_all = 0
@@ -177,7 +147,7 @@ def w_lstm(path, parent_model, train, dev, test, device):
         
         #print("Accuracy on dev set at epoch %d : %f" %(epoch, np.mean(dev_accuracy_all)))
         epoch_accuracy_dev = [good_pred_dev / num_pred_dev * 100]     
-        #print(epoch_accuracy_dev)
+        print(epoch_accuracy_dev)
 
         #print(epoch_accuracy_dev)
 

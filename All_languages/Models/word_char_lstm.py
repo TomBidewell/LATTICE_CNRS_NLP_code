@@ -16,7 +16,7 @@ class LSTM_WORD_CHAR(nn.Module):
         
         self.word_embedding_layer = nn.Embedding(vocab_size, embedding_size_word, padding_idx = 0)
         
-        self.lstm_char_forward = nn.LSTM(embedding_size_char, 
+        self.lstm_char = nn.LSTM(embedding_size_char, 
                             hidden_layer_size_char, 
                             num_layers = num_layers,
                             batch_first=True, 
@@ -24,15 +24,7 @@ class LSTM_WORD_CHAR(nn.Module):
                             bidirectional=True)
         
         self.device = device
-        
-        
-        self.lstm_char_backward = nn.LSTM(embedding_size_char, 
-                            hidden_layer_size_char, 
-                            num_layers = num_layers,
-                            batch_first=True, 
-                            dropout = dropout,
-                            bidirectional=False)
-        
+               
         
         self.lstm_word_n_char = nn.LSTM( 2 * hidden_layer_size_char + embedding_size_word, 
                                             hidden_layer_size_word, 
@@ -56,7 +48,7 @@ class LSTM_WORD_CHAR(nn.Module):
 
         batch_size, max_sent_len, max_char, char_emb_size = emb_char.shape
         emb_char = torch.reshape(emb_char, (batch_size * max_sent_len, max_char, char_emb_size))
-        char_last_hidden = self.lstm_char_forward(emb_char)[0][:,-1,:]
+        char_last_hidden = self.lstm_char(emb_char)[0][:,-1,:]
         char_last_hidden = torch.reshape(char_last_hidden, (batch_size, max_sent_len, 2 * self.hidden_layer_size_char))
 
         emb_word = self.word_embedding_layer(X_word)

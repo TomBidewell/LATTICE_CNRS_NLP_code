@@ -41,39 +41,42 @@ models = {
 model = models[model]
 
 
-path = Path(destination)
-path.mkdir(parents=True)
+try:
+    path = Path(destination)
+    path.mkdir(parents=True)
+except:
+    ()
 
 epoch_losses_train, epoch_accuracy_train, epoch_losses_dev, epoch_accuracy_dev, test_loss_all, test_accuracy_all = model(path, parent_model, train, dev, test, device)
 
 
-with open(destination + "/" + model.__name__ + "/" + "epoch_losses_train.csv", 'w', newline = '') as f:
+with open(destination + "/" + "epoch_losses_train.csv", 'w', newline = '') as f:
     write = csv.writer(f)
     write.writerow(["Loss"])
     write.writerows(epoch_losses_train)
 
-with open(destination + "/" + model.__name__ + "/" + "epoch_accuracy_train.csv", 'w', newline = '') as f:
+with open(destination + "/" + "epoch_accuracy_train.csv", 'w', newline = '') as f:
     write = csv.writer(f)
     write.writerow(["Accuracy"])
     write.writerows(epoch_accuracy_train)
 
-with open(destination + "/" + model.__name__ + "/" + "epoch_losses_dev.csv", 'w', newline = '') as f:
+with open(destination + "/" + "epoch_losses_dev.csv", 'w', newline = '') as f:
     write = csv.writer(f)
     write.writerow(["Loss"])
     write.writerows(epoch_losses_dev)
 
-with open(destination + "/" + model.__name__ + "/" + "epoch_accuracy_dev.csv", 'w', newline = '') as f:
+with open(destination + "/" + "epoch_accuracy_dev.csv", 'w', newline = '') as f:
     write = csv.writer(f)
     write.writerow(["Accuracy"])
     write.writerows(epoch_accuracy_dev)
 
-with open(destination + "/" + model.__name__ + "/" + "test_loss_all.csv", 'w', newline = '') as f:
+with open(destination + "/" + "test_loss_all.csv", 'w', newline = '') as f:
     write = csv.writer(f)
     write.writerow(["Loss"])
     write.writerows(test_loss_all)
 
 
-with open(destination + "/" + model.__name__ + "/" + "test_accuracy_all.csv", 'w', newline = '') as f:
+with open(destination + "/" + "test_accuracy_all.csv", 'w', newline = '') as f:
     write = csv.writer(f)
     write.writerow(["Accuracy"])
     write.writerows(test_accuracy_all)
