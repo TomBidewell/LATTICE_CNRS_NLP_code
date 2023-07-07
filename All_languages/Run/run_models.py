@@ -8,69 +8,84 @@ import torch
 os.path.join(os.path.dirname(__file__), '../')
 sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 
-from Train_Models.train_word_char_lstm import w_ch_lstm
-from Train_Models.train_word_lstm import w_lstm
-from Train_Models.train_transformer import transformer
-from tqdm import tqdm
 from torch import manual_seed
 from random import seed
+from Train_Models.train import train_model
+from tqdm import tqdm
+from argparse import ArgumentParser
 
 seed(5)
 manual_seed(5)
 
 
-destination = sys.argv[1]
-train = sys.argv[2]
-dev = sys.argv[3]
-test = sys.argv[4]
-device = int(sys.argv[5])
-device = torch.device(device)
-model = sys.argv[6]
+ap = ArgumentParser()
+ap.add_argument('destination', help='Path to where metrics are stored file.')
+ap.add_argument('train', help='Path to train file')
+ap.add_argument('dev', help = 'Path to dev file')
+ap.add_argument('test', help = 'Path to test file')
+ap.add_argument('device', default=0, help = 'Device being used')
+ap.add_argument('model_name', help = 'Model Being Ran')
+ap.add_argument('number_of_repeats', help = 'Number of iterations')
+args = ap.parse_args()
+
+device = torch.device(int(args.device))
+
+use_transformer = False
+
+if args.model_name == "transformer":
+    use_transformer = True
 
 
-models = {
-    'w_ch_lstm': w_ch_lstm,
-    'w_lstm': w_lstm, 
-    'transformer': transformer
-}
+path = Path(args.destination + "/" + args.model_name)
+try: 
+    path.mkdir(parents=True)
+except: 
+    ()
 
-model = models[model]
+all_epoch_losses_train = []
+all_epoch_accuracy_train = [] 
+all_epoch_losses_dev = [] 
+all_epoch_accuracy_dev = [] 
+all_test_loss_all = [] 
+all_test_accuracy_all = []
 
-path = Path(destination + "/" + model.__name__ )
-path.mkdir(parents=True)
+for i in tqdm(range(int(args.number_of_repeats)), total = int(args.number_of_repeats), desc = 'Repetitions: '):
+    epoch_losses_train, epoch_accuracy_train, epoch_losses_dev, epoch_accuracy_dev, test_loss_all, test_accuracy_all = train_model(path, use_transformer, args.model_name, args.train, args.dev, args.test, device)
+    all_epoch_losses_train.append(epoch_losses_train)
+    all_epoch_accuracy_train.append(epoch_accuracy_train)
+    all_epoch_losses_dev.append(epoch_losses_dev)
+    all_epoch_accuracy_dev.append(epoch_accuracy_dev)
+    all_test_loss_all.append(test_loss_all)
+    all_test_accuracy_all.append(test_accuracy_all)
 
 
-
-epoch_losses_train, epoch_accuracy_train, epoch_losses_dev, epoch_accuracy_dev, test_loss_all, test_accuracy_all = model(path, train, dev, test, device)
-
-
-with open(destination + "/" + model.__name__ + "/" + "epoch_losses_train.csv", 'w', newline = '') as f:
+with open(args.destination + "/" + args.model_name + "/" + "epoch_losses_train.csv", 'w', newline = '') as f:
     write = csv.writer(f)
     write.writerow(["Loss"])
-    write.writerows(epoch_losses_train)
+    write.writerows(all_epoch_losses_train)
 
-with open(destination + "/" + model.__name__ + "/" + "epoch_accuracy_train.csv", 'w', newline = '') as f:
+with open(args.destination + "/" + args.model_name + "/" + "epoch_accuracy_train.csv", 'w', newline = '') as f:
     write = csv.writer(f)
     write.writerow(["Accuracy"])
-    write.writerows(epoch_accuracy_train)
+    write.writerows(all_epoch_accuracy_train)
 
-with open(destination + "/" + model.__name__ + "/" + "epoch_losses_dev.csv", 'w', newline = '') as f:
+with open(args.destination + "/" + args.model_name + "/" + "epoch_losses_dev.csv", 'w', newline = '') as f:
     write = csv.writer(f)
     write.writerow(["Loss"])
-    write.writerows(epoch_losses_dev)
+    write.writerows(all_epoch_losses_dev)
 
-with open(destination + "/" + model.__name__ + "/" + "epoch_accuracy_dev.csv", 'w', newline = '') as f:
+with open(args.destination + "/" + args.model_name + "/" + "epoch_accuracy_dev.csv", 'w', newline = '') as f:
     write = csv.writer(f)
     write.writerow(["Accuracy"])
-    write.writerows(epoch_accuracy_dev)
+    write.writerows(all_epoch_accuracy_dev)
 
-with open(destination + "/" + model.__name__ + "/" + "test_loss_all.csv", 'w', newline = '') as f:
+with open(args.destination + "/" + args.model_name + "/" + "test_loss_all.csv", 'w', newline = '') as f:
     write = csv.writer(f)
     write.writerow(["Loss"])
-    write.writerows(test_loss_all)
+    write.writerows(all_test_loss_all)
 
 
-with open(destination + "/" + model.__name__ + "/" + "test_accuracy_all.csv", 'w', newline = '') as f:
+with open(args.destination + "/" + args.model_name + "/" + "test_accuracy_all.csv", 'w', newline = '') as f:
     write = csv.writer(f)
     write.writerow(["Accuracy"])
-    write.writerows(test_accuracy_all)
+    write.writerows(all_test_accuracy_all)

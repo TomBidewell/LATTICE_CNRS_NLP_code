@@ -24,12 +24,8 @@ def transformer(path, train, dev, test, device):
     hidden_layer_size = 500
     num_epochs = 1000
 
-    print("Model Loading")
-
     model =  XLMRobertaModel.from_pretrained('xlm-roberta-base')
     model.to(device)
-
-    print("Model Ready")
 
     roberta_pos = ROBERTA(num_classes, hidden_layer_size) 
 

@@ -166,8 +166,8 @@ for lang in os.listdir(directory):
 
 
 def scatter_plot(df, title):
-    #fig = px.scatter(df, x= df.columns[1], y=df.columns[2], text='Treebank')
-    fig = px.scatter(df, x= df.columns[1], y=df.columns[2])
+    fig = px.scatter(df, x= df.columns[1], y=df.columns[2], text='Treebank')
+    #fig = px.scatter(df, x= df.columns[1], y=df.columns[2])
     fig.update_traces(textposition='top center')
 
     fig.update_layout(
@@ -186,7 +186,7 @@ def get_df(name_1, list_1, name_2, list_2):
 
 #scatter_plot(get_df('Transformer', transformer_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: transformer vs w_lstm')
 
-#scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs w_lstm')
+scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs w_lstm')
 
 #scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs transformer')
 

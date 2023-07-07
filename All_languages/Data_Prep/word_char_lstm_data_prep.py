@@ -5,8 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
-import plotext as plt
-
+import random
 
 
 
@@ -14,21 +13,21 @@ def word_char_prepared_data(train, dev, test):
     #load data and take a small portion for setting up architecture
     df_train = pd.read_csv(train, header = None)
     df_train.columns = ['Sentence', 'PoS']
-    df_train["Sentence"] = df_train["Sentence"].apply(lambda x: x[2:-2].split("', '"))
-    df_train['PoS'] = df_train['PoS'].apply(lambda x: x[2:-2].split("', '"))
-    df_train = df_train.head(500)
+    df_train.Sentence = df_train.Sentence.apply(literal_eval)
+    df_train.PoS = df_train.PoS.apply(literal_eval)
+    df_train = df_train.head(2500)
 
     df_dev = pd.read_csv(dev, header = None)
     df_dev.columns = ['Sentence', 'PoS']
-    df_dev['Sentence'] = df_dev['Sentence'].apply(lambda x: x[2:-2].split("', '"))
-    df_dev['PoS'] = df_dev['PoS'].apply(lambda x: x[2:-2].split("', '"))
-    df_dev = df_dev.head(100)
+    df_dev.Sentence = df_dev.Sentence.apply(literal_eval)
+    df_dev.PoS = df_dev.PoS.apply(literal_eval)
+    df_dev = df_dev.head(300)
 
     df_test = pd.read_csv(test, header = None)
     df_test.columns = ['Sentence', 'PoS']
-    df_test['Sentence'] = df_test['Sentence'].apply(lambda x: x[2:-2].split("', '"))
-    df_test['PoS'] = df_test['PoS'].apply(lambda x: x[2:-2].split("', '"))
-    df_test = df_test.head(100)
+    df_test.Sentence = df_test.Sentence.apply(literal_eval)
+    df_test.PoS = df_test.PoS.apply(literal_eval)
+    df_test = df_test.head(300)
 
     
     #creating indices for the vocab
@@ -47,10 +46,10 @@ def word_char_prepared_data(train, dev, test):
     counts = {}
     def get_counts(x):
         for w in x:
-            if w.lower() in counts:
-                counts[w.lower()] += 1
+            if w in counts:
+                counts[w] += 1
             else:
-                counts[w.lower()] = 1
+                counts[w] = 1
 
     df_train['Sentence'].apply(lambda x: get_counts(x))
 
@@ -59,10 +58,10 @@ def word_char_prepared_data(train, dev, test):
     def get_char_counts(x):
         for w in x:
             for c in w:
-                if c.lower() in char_counts:
-                    char_counts[c.lower()] += 1
+                if c in char_counts:
+                    char_counts[c] += 1
                 else:
-                    char_counts[c.lower()] = 1
+                    char_counts[c] = 1
 
     df_train['Sentence'].apply(lambda x: get_char_counts(x))
 
@@ -72,7 +71,7 @@ def word_char_prepared_data(train, dev, test):
 
     def create_char_ids(x):
         for token in x:
-            token = token.lower()
+            token = token
             for char in token:
                 if char not in char2id:
                     char2id[char] = len(char2id)
@@ -86,7 +85,7 @@ def word_char_prepared_data(train, dev, test):
 
     def create_word_ids(x):
         for token in x:
-            token = token.lower()
+            token = token
             if token not in word2id:
                 if counts[token] == 1:
                     word2id[token] = word2id['UNK']
@@ -114,7 +113,7 @@ def word_char_prepared_data(train, dev, test):
         
         for word, tag in zip(x,y):
                 
-            word = word.lower()
+            word = word
             if word in word2id:
                 word_char = []
                 
@@ -129,10 +128,11 @@ def word_char_prepared_data(train, dev, test):
 
                 for char in word:
                     if char in char2id:
-                        if char_counts[char] < min_frequency:
-                            word_char.append(char2id['UNK'])
+                        if random.random() < 0.999:
+                           word_char.append(char2id[char])
                         else:
-                            word_char.append(char2id[char])
+                            word_char.append(char2id['UNK'])
+                            
                     else:
                         word_char.append(char2id['UNK'])
                 
@@ -152,10 +152,10 @@ def word_char_prepared_data(train, dev, test):
 
                 for char in word:
                     if char in char2id:
-                        if char_counts[char] < min_frequency:
-                            word_char.append(char2id['UNK'])
+                        if random.random() < 0.999:
+                           word_char.append(char2id[char])
                         else:
-                            word_char.append(char2id[char])
+                            word_char.append(char2id['UNK'])
                     else:
                         word_char.append(char2id['UNK'])
                 
@@ -174,6 +174,7 @@ def word_char_prepared_data(train, dev, test):
 
     df_test[['Encoded_Sentence_Word', 'Encoded_Sentence_Char','Encoded_PoS']] = df_test.apply(lambda x: encoding(x.Sentence, x.PoS), axis = 1, result_type="expand")
 
+  
 
     seq_len = []
 

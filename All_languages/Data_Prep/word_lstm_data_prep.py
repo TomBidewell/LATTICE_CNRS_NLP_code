@@ -16,28 +16,28 @@ def word_prepared_data(train, dev, test):
     df_train.columns = ['Sentence', 'PoS']
     df_train.Sentence = df_train.Sentence.apply(literal_eval)
     df_train.PoS = df_train.PoS.apply(literal_eval)
-    df_train = df_train.head(500)
+    df_train = df_train.head(2500)
 
     df_dev = pd.read_csv(dev, header = None)
     df_dev.columns = ['Sentence', 'PoS']
     df_dev.Sentence = df_dev.Sentence.apply(literal_eval)
     df_dev.PoS = df_dev.PoS.apply(literal_eval)
-    df_dev = df_dev.head(100)
+    df_dev = df_dev.head(300)
 
     df_test = pd.read_csv(test, header = None)
     df_test.columns = ['Sentence', 'PoS']
     df_test.Sentence = df_test.Sentence.apply(literal_eval)
     df_test.PoS = df_test.PoS.apply(literal_eval)
-    df_test = df_test.head(100)
+    df_test = df_test.head(300)
 
 
     counts = {}
     def get_counts(x):
         for w in x:
             try: 
-                counts[w.lower()] += 1
+                counts[w] += 1
             except:
-                counts[w.lower()] = 1
+                counts[w] = 1
 
     df_train['Sentence'].apply(lambda x: get_counts(x))
 
@@ -53,7 +53,7 @@ def word_prepared_data(train, dev, test):
 
     def create_word_ids(x):
         for token in x:
-            token = token.lower()
+            token = token
             if token not in word2id:
                 if counts[token] == 1:
                     word2id[token] = word2id['UNK']
@@ -82,7 +82,7 @@ def word_prepared_data(train, dev, test):
 
         for word, tag in zip(x,y):
                 
-            word = word.lower()
+            word = word
             if word in word2id:
                 encoding_sent.append(word2id[word])
                 if tag in label2id:

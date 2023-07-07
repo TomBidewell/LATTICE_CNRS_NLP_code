@@ -9,10 +9,6 @@ from os import execlp, fork, wait
 os.path.join(os.path.dirname(__file__), '../')
 sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 
-from Train_Models.train_word_char_lstm import w_ch_lstm
-from Train_Models.train_word_lstm import w_lstm
-from Train_Models.train_transformer import transformer
-
 
 
 
@@ -26,11 +22,11 @@ def load_conllu(filename):
 
 
 todo = []
-models =  [w_ch_lstm, w_lstm] #[w_ch_lstm, w_lstm, transformer]
+models =  ['w_ch_lstm', 'w_lstm', 'transformer']
 
 
 # assign directory
-directory = '/home/tbidewell/home/POS_tagging/Data/Trial'
+directory = '/home/tbidewell/home/POS_tagging/Data/Clean'
 
 # iterate over files in
 # that directory
@@ -100,11 +96,12 @@ for lang in tqdm(os.listdir(directory), desc = 'Loading Each Language'):
 
         
 print("Running Training: ")
+num_repeats = str(5)
 
 
 # then run it
 
-running = {'0':-1, '1':-1}# these are the two gpus or atropos
+running = {'0':-1, '1':-1} # these are the two gpus or atropos
 
 while todo != []:
     if -1 in running.values(): # there at least one free GPU (for me)
@@ -112,7 +109,7 @@ while todo != []:
         lang_f, train,dev,test, model = todo[0]
 
         dest = lang_f.split("/")[-1]
-        destination = "/home/tbidewell/home/POS_tagging/Data/Trial_Metrics/" + dest
+        destination = "/home/tbidewell/home/POS_tagging/Data/Metrics/" + dest
 
         todo = todo[1:]
 
@@ -122,7 +119,7 @@ while todo != []:
 
         if pid == 0:
 
-            execlp('python3.9', 'python3.9', '/home/tbidewell/home/POS_tagging/code/scripts/All_languages/Run/run_models.py', destination, train, dev, test, gpu, model.__name__)
+            execlp('python3.9', 'python3.9', '/home/tbidewell/home/POS_tagging/code/scripts/All_languages/Run/run_models.py', destination, train, dev, test, gpu, model, num_repeats)
 
             exit()
 

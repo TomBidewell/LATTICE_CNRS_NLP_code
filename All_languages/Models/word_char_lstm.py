@@ -21,7 +21,7 @@ class LSTM_WORD_CHAR(nn.Module):
                             num_layers = num_layers,
                             batch_first=True, 
                             dropout = dropout,
-                            bidirectional=False)
+                            bidirectional=True)
         
         self.device = device
         
@@ -40,8 +40,8 @@ class LSTM_WORD_CHAR(nn.Module):
                                             batch_first=True, 
                                             dropout = dropout,
                                             bidirectional=True)
-    
         
+
         
         self.linear_1 = nn.Linear(2*hidden_layer_size_word, hidden_layer_size_word) # 2*hidden as using bidirectional
 
@@ -51,31 +51,16 @@ class LSTM_WORD_CHAR(nn.Module):
         
 
     def forward(self, X_word, X_char):
-        new_size = list(X_char.shape)
-        new_size.pop()
-        new_size.append(2  * self.hidden_layer_size_char)  # 2 as forward and backward over characters, num_layers as concatenating these layers, layers have hidden_layer_size
         
-        all_sentences = torch.zeros(new_size)
-        
-        #emb_char = emb_char.view(emb_char.shape[0], emb_char.shape[1], (emb_char.shape[2]*emb_char.shape[3])) #concat embeddings
-        
-        
-        for i, sentence in enumerate(X_char):
+        emb_char = self.char_embedding_layer(X_char)
 
-            emb_char = self.char_embedding_layer(sentence)
-            out_char_forward, _ = self.lstm_char_forward(emb_char)
-            out_char_backward, _ = self.lstm_char_backward(emb_char)
-            out_char_forward = out_char_forward[:, -1, :]
-            out_char_backward = out_char_backward[:, -1, :]
-            out_char = torch.cat((out_char_forward, out_char_backward), dim = -1)
-            all_sentences[i, :, :] = out_char
+        batch_size, max_sent_len, max_char, char_emb_size = emb_char.shape
+        emb_char = torch.reshape(emb_char, (batch_size * max_sent_len, max_char, char_emb_size))
+        char_last_hidden = self.lstm_char_forward(emb_char)[0][:,-1,:]
+        char_last_hidden = torch.reshape(char_last_hidden, (batch_size, max_sent_len, 2 * self.hidden_layer_size_char))
 
-        all_sentences = all_sentences.to(self.device)
-                  
         emb_word = self.word_embedding_layer(X_word)
-        
-        
-        emb_both = torch.cat((emb_word, all_sentences), -1)
+        emb_both = torch.cat((emb_word, char_last_hidden), -1)
                 
         out, _ = self.lstm_word_n_char(emb_both)
                 

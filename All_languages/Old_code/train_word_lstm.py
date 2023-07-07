@@ -32,7 +32,7 @@ def w_lstm(path, train, dev, test, device):
     bidirectional = True
     batch_first = True
     dropout = 0.5
-    num_epochs = 1000
+    num_epochs = 10
 
     lstm = WORD_LSTM(vocab_size, embedding_size, num_classes, hidden_layer_size, num_layers, dropout, batch_first, bidirectional)
 
@@ -117,7 +117,7 @@ def w_lstm(path, train, dev, test, device):
         #print("Accuracy on training set at epoch %d : %f" %(epoch, np.mean(accuracy_all)))
         epoch_accuracy_train = [good_pred_train / num_pred_train * 100]
 
-        #print(epoch_accuracy_train)
+        print(epoch_accuracy_train)
         
         with torch.no_grad():
             dev_loss_all = 0
@@ -161,7 +161,7 @@ def w_lstm(path, train, dev, test, device):
         
         #print("Accuracy on dev set at epoch %d : %f" %(epoch, np.mean(dev_accuracy_all)))
         epoch_accuracy_dev = [good_pred_dev / num_pred_dev * 100]     
-        #print(epoch_accuracy_dev)
+        print(epoch_accuracy_dev)
 
         #print(epoch_accuracy_dev)
 

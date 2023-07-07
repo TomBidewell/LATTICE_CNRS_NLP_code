@@ -34,7 +34,7 @@ def w_ch_lstm(path, train, dev, test, device):
     hidden_layer_size_word = 300
     num_layers = 2
     dropout = 0.5
-    num_epochs = 1000
+    num_epochs = 25
 
 
     lstm_word_n_char = LSTM_WORD_CHAR(vocab_size, char_size, embedding_size_char, embedding_size_word, num_classes, hidden_layer_size_char, hidden_layer_size_word, num_layers, device, dropout)
@@ -56,7 +56,7 @@ def w_ch_lstm(path, train, dev, test, device):
     epoch_accuracy_dev = []
 
     # loop on epochs
-    for epoch in tqdm(range(num_epochs), total = num_epochs, desc = 'Word Char LSTM: '):
+    for epoch in range(num_epochs): #tqdm(range(num_epochs), total = num_epochs, desc = 'Word Char LSTM: '):
         epoch_loss = 0
         
         num_pred_train = 0
@@ -65,7 +65,7 @@ def w_ch_lstm(path, train, dev, test, device):
 
         
     
-        for X_word, X_char, y in zip(train_input_word, train_input_char, train_gold):
+        for X_word, X_char, y in tqdm(zip(train_input_word, train_input_char, train_gold), total = len(train_input_word), desc = 'Per Batch'):
             
             X_word = X_word.to(device)
             X_char = X_char.to(device)
@@ -110,6 +110,7 @@ def w_ch_lstm(path, train, dev, test, device):
             #accuracy_all.append(accuracy * 100)
 
         epoch_accuracy_train = [good_pred_train / num_pred_train * 100]
+        print(epoch_accuracy_train)
 
         #print("Average Loss on training set at epoch %d : %f" %(epoch, epoch_loss))
         epoch_losses_train.append([epoch_loss])
@@ -163,6 +164,7 @@ def w_ch_lstm(path, train, dev, test, device):
                 #dev_accuracy_all.append(dev_accuracy * 100)
 
         epoch_accuracy_dev = [good_pred_dev / num_pred_dev * 100]
+        print(epoch_accuracy_dev)
 
         #print(epoch_accuracy_dev)
 
@@ -196,7 +198,7 @@ def w_ch_lstm(path, train, dev, test, device):
       num_pred_test = 0
       good_pred_test = 0
 
-      for X_test_word, X_test_char, y_test in zip(test_input_word, test_input_char, test_gold ):
+      for X_test_word, X_test_char, y_test in zip(test_input_word, test_input_char, test_gold):
         X_test_word = X_test_word.to(device)
         X_test_char = X_test_char.to(device)
         y_test = y_test.to(device)
@@ -219,12 +221,6 @@ def w_ch_lstm(path, train, dev, test, device):
 
         good_pred_test += (pred_test_labels.to(device) == y_test).mul(mask_test).int().sum().item()
 
-        # prediction and accuracy on the dev set
-        #pred_test_labels = torch.argmax(log_test_probs, dim=1)
-        
-        #test_accuracy = (torch.sum((pred_test_labels == y_test).int()).item()) / (pred_test_labels.shape[0]*pred_test_labels.shape[1])
-
-        #test_accuracy_all.append(test_accuracy * 100)
     test_accuracy_all = [good_pred_test / num_pred_test * 100]
     
     return epoch_losses_train, [epoch_accuracy_train], epoch_losses_dev, [highest_accuracy], [[test_loss_all]], [test_accuracy_all]

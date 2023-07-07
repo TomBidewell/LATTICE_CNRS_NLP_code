@@ -22,21 +22,21 @@ def transformer_data_prep(train, dev, test):
     df_train.Sentence = df_train.Sentence.apply(literal_eval)
     df_train.PoS = df_train.PoS.apply(literal_eval)
     df_train.Sentence = df_train.Sentence.apply(lambda x: " ".join(x))
-    #df_train = df_train.head(500)
+    df_train = df_train.head(2500)
 
     df_dev = pd.read_csv(dev, header = None)
     df_dev.columns = ['Sentence', 'PoS']
     df_dev.Sentence = df_dev.Sentence.apply(literal_eval)
     df_dev.PoS = df_dev.PoS.apply(literal_eval)
     df_dev.Sentence = df_dev.Sentence.apply(lambda x: " ".join(x))
-    #df_dev = df_dev.head(100)
+    df_dev = df_dev.head(300)
 
     df_test = pd.read_csv(test, header = None)
     df_test.columns = ['Sentence', 'PoS']
     df_test.Sentence = df_test.Sentence.apply(literal_eval)
     df_test.PoS = df_test.PoS.apply(literal_eval)
     df_test.Sentence = df_test.Sentence.apply(lambda x: " ".join(x))
-    #df_test = df_test.head(100)
+    df_test = df_test.head(300)
 
 
     tokenizer = AutoTokenizer.from_pretrained('xlm-roberta-base')
