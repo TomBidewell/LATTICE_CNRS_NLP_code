@@ -111,7 +111,7 @@ def train_model(path, transformer, model_name, train, dev, test, device):
     epoch_accuracy_dev = []
 
     # loop on epochs
-    for epoch in range(num_epochs):
+    for epoch in tqdm(range(num_epochs), total = num_epochs):
         #print("Epoch", epoch)
         epoch_loss = 0
 
@@ -130,7 +130,7 @@ def train_model(path, transformer, model_name, train, dev, test, device):
                 length = len(train_input)
                 data = zip(train_input, [0]*len(train_input), train_gold)
 
-        for data_1, data_2, y in tqdm(data, total = length, desc = 'Train: '):
+        for data_1, data_2, y in data:
 
             data_1 = data_1.to(device)
 
@@ -151,7 +151,7 @@ def train_model(path, transformer, model_name, train, dev, test, device):
 
             loss = loss_function(log_probs, y) 
             
-            epoch_loss += loss
+            epoch_loss += loss.item()
 
             loss.backward() 
 
@@ -190,7 +190,7 @@ def train_model(path, transformer, model_name, train, dev, test, device):
                     dev_length = len(dev_input)
                     dev_data = zip(dev_input, [0]*len(dev_input), dev_gold)
 
-            for dev_data_1, dev_data_2, y_dev in tqdm(dev_data, total = dev_length, desc='Dev: '):
+            for dev_data_1, dev_data_2, y_dev in dev_data:
 
                 dev_data_1 = dev_data_1.to(device)
 
@@ -209,7 +209,7 @@ def train_model(path, transformer, model_name, train, dev, test, device):
                 # total loss on the dev set
                 dev_loss = loss_function(log_dev_probs, y_dev)
 
-                dev_loss_all += dev_loss
+                dev_loss_all += dev_loss.item()
 
                 mask_dev = (y_dev != -100)
 
@@ -277,7 +277,7 @@ def train_model(path, transformer, model_name, train, dev, test, device):
             # total loss on the dev set
             test_loss = loss_function(log_test_probs, y_test)
 
-            test_loss_all += test_loss
+            test_loss_all += test_loss.item()
 
             mask_test = (y_test != -100)
 

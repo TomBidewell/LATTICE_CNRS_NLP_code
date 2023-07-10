@@ -3,9 +3,9 @@ import os
 import plotly.express as px
 import matplotlib.pyplot as plt
 import pandas as pd
-
+import numpy as np
 # assign directory
-directory = '/home/tbidewell/home/POS_tagging/Data/Trial_Metrics'
+directory = '/home/tbidewell/home/POS_tagging/Data/Metrics'
  
 # iterate over files in
 # that directory
@@ -47,37 +47,61 @@ for lang in os.listdir(directory):
                     with open(model_path + '/epoch_losses_train.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        word_char_lstm_ep_loss_tr.append(float(data[-1][0]))
+                        total = []
+                        for i in data:
+                            if 'Loss' not in i[0]:
+                                total.append(float(i[0][1:-1]))
+                        word_char_lstm_ep_loss_tr.append(np.mean(total))
                 
                 if "epoch_losses_dev.csv" in file:
                     with open(model_path + '/epoch_losses_dev.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        word_char_lstm_ep_loss_dv.append(float(data[-1][0]))
+                        total = []
+                        for i in data:
+                            if 'Loss' not in i[0]:
+                                total.append(float(i[0][1:-1]))
+                        word_char_lstm_ep_loss_dv.append(np.mean(total))
 
                 if "epoch_accuracy_train.csv" in file:
                     with open(model_path + '/epoch_accuracy_train.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        word_char_lstm_ep_acc_tr.append(float(data[-1][0]))
+                        total = []
+                        for i in data:
+                            if 'Accuracy' not in i[0]:
+                                total.append(float(i[0][1:-1]))
+                        word_char_lstm_ep_acc_tr.append(np.mean(total))
 
                 if "epoch_accuracy_dev.csv" in file:
                     with open(model_path + '/epoch_accuracy_dev.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        word_char_lstm_ep_acc_dv.append(float(data[-1][0]))
+                        total = []
+                        for i in data:
+                            if 'Accuracy' not in i[0]:
+                                total.append(float(i[0][1:-1]))
+                        word_char_lstm_ep_acc_dv.append(np.mean(total))
 
                 if "test_accuracy_all.csv" in file:
                     with open(model_path + '/test_accuracy_all.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        word_char_lstm_test_acc.append(float(data[-1][0]))
+                        total = []
+                        for i in data:
+                            if 'Accuracy' not in i[0]:
+                                total.append(float(i[0][1:-1]))
+                        word_char_lstm_test_acc.append(np.mean(total))
 
                 if "test_loss_all.csv" in file:
                     with open(model_path + '/test_loss_all.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        word_char_lstm_test_loss.append(float(data[-1][0]))
+                        total = []
+                        for i in data:
+                            if 'Loss' not in i[0]:
+                                total.append(float(i[0][1:-1]))
+                        word_char_lstm_test_loss.append(np.mean(total))
         
         if "w_lstm" in model:            
             for file in os.listdir(model_path):
@@ -85,37 +109,61 @@ for lang in os.listdir(directory):
                     with open(model_path + '/epoch_losses_train.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        word_lstm_ep_loss_tr.append(float(data[-1][0]))
+                        total = []
+                        for i in data:
+                            if 'Loss' not in i[0]:
+                                total.append(float(i[0][1:-1]))
+                        word_lstm_ep_loss_tr.append(np.mean(total))
                 
                 if "epoch_losses_dev.csv" in file:
                     with open(model_path + '/epoch_losses_dev.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        word_lstm_ep_loss_dv.append(float(data[-1][0]))
+                        total = []
+                        for i in data:
+                            if 'Loss' not in i[0]:
+                                total.append(float(i[0][1:-1]))
+                        word_lstm_ep_loss_dv.append(np.mean(total))
 
                 if "epoch_accuracy_train.csv" in file:
                     with open(model_path + '/epoch_accuracy_train.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        word_lstm_ep_acc_tr.append(float(data[-1][0]))
+                        total = []
+                        for i in data:
+                            if 'Accuracy' not in i[0]:
+                                total.append(float(i[0][1:-1]))
+                        word_lstm_ep_acc_tr.append(np.mean(total))
 
                 if "epoch_accuracy_dev.csv" in file:
                     with open(model_path + '/epoch_accuracy_dev.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        word_lstm_ep_acc_dv.append(float(data[-1][0]))
+                        total = []
+                        for i in data:
+                            if 'Accuracy' not in i[0]:
+                                total.append(float(i[0][1:-1]))
+                        word_lstm_ep_acc_dv.append(np.mean(total))
 
                 if "test_accuracy_all.csv" in file:
                     with open(model_path + '/test_accuracy_all.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        word_lstm_test_acc.append(float(data[-1][0]))
+                        total = []
+                        for i in data:
+                            if 'Accuracy' not in i[0]:
+                                total.append(float(i[0][1:-1]))
+                        word_lstm_test_acc.append(np.mean(total))
 
                 if "test_loss_all.csv" in file:
                     with open(model_path + '/test_loss_all.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
-                        word_lstm_test_loss.append(float(data[-1][0]))
+                        total = []
+                        for i in data:
+                            if 'Loss' not in i[0]:
+                                total.append(float(i[0][1:-1]))
+                        word_lstm_test_loss.append(np.mean(total))
 
         if "transformer" in model:            
             for file in os.listdir(model_path):
@@ -124,42 +172,66 @@ for lang in os.listdir(directory):
                         reader = csv.reader(f)
                         data = list(reader)
                         if len(data) != 0:
-                            transformer_ep_loss_tr.append(float(data[-1][0]))
+                            total = []
+                            for i in data:
+                                if 'Loss' not in i[0]:
+                                    total.append(float(i[0][1:-1]))
+                            transformer_ep_loss_tr.append(np.mean(total))
                 
                 if "epoch_losses_dev.csv" in file:
                     with open(model_path + '/epoch_losses_dev.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
                         if len(data) != 0:
-                            transformer_ep_loss_dv.append(float(data[-1][0]))
+                            total = []
+                            for i in data:
+                                if 'Loss' not in i[0]:
+                                    total.append(float(i[0][1:-1]))
+                            transformer_ep_loss_dv.append(np.mean(total))
 
                 if "epoch_accuracy_train.csv" in file:
                     with open(model_path + '/epoch_accuracy_train.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
                         if len(data) != 0:
-                            transformer_ep_acc_tr.append(float(data[-1][0]))
+                            total = []
+                            for i in data:
+                                if 'Accuracy' not in i[0]:
+                                    total.append(float(i[0][1:-1]))
+                            transformer_ep_acc_tr.append(np.mean(total))
 
                 if "epoch_accuracy_dev.csv" in file:
                     with open(model_path + '/epoch_accuracy_dev.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
                         if len(data) != 0:
-                            transformer_ep_acc_dv.append(float(data[-1][0]))
+                            total = []
+                            for i in data:
+                                if 'Accuracy' not in i[0]:
+                                    total.append(float(i[0][1:-1]))
+                            transformer_ep_acc_dv.append(np.mean(total))
 
                 if "test_accuracy_all.csv" in file:
                     with open(model_path + '/test_accuracy_all.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
                         if len(data) != 0:
-                            transformer_test_acc.append(float(data[-1][0]))
+                            total = []
+                            for i in data:
+                                if 'Accuracy' not in i[0]:
+                                    total.append(float(i[0][1:-1]))
+                            transformer_test_acc.append(np.mean(total))
 
                 if "test_loss_all.csv" in file:
                     with open(model_path + '/test_loss_all.csv', newline='') as f:
                         reader = csv.reader(f)
                         data = list(reader)
                         if len(data) != 0:
-                            transformer_test_loss.append(float(data[-1][0]))
+                            total = []
+                            for i in data:
+                                if 'Loss' not in i[0]:
+                                    total.append(float(i[0][1:-1]))
+                            transformer_test_loss.append(np.mean(total))
             
 
 #word_lstm_ep_loss_tr = word_lstm_ep_loss_tr[:len(word_lstm_ep_loss_tr)-1]
@@ -184,11 +256,11 @@ def get_df(name_1, list_1, name_2, list_2):
 
 
 
-#scatter_plot(get_df('Transformer', transformer_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: transformer vs w_lstm')
+scatter_plot(get_df('Transformer', transformer_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: transformer vs w_lstm')
 
 scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Word_LSTM',  word_lstm_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs w_lstm')
 
-#scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs transformer')
+scatter_plot(get_df('Word_Char_LSTM', word_char_lstm_ep_acc_dv, 'Transformer',  transformer_ep_acc_dv), 'Dev Accuracy: w_ch_lstm vs transformer')
 
 
 '''

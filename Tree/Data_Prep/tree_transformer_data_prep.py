@@ -11,7 +11,6 @@ from tqdm import tqdm
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-print('Using device:', device)
 
 
 def transformer_data_prep(train, dev, test):

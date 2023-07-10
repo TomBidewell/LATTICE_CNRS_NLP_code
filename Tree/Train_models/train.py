@@ -7,6 +7,7 @@ import sys
 from tqdm import tqdm
 from pathlib import Path
 from transformers import XLMRobertaModel
+import pickle
 
 
 
@@ -14,8 +15,8 @@ os.path.join(os.path.dirname(__file__), '../')
 sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 
 from Data_Prep.tree_word_lstm_data_prep import word_prepared_data
-from Data_Prep.tree_transformer_data_prep import word_char_prepared_data
-#from Data_Prep.tree_transformer_data_prep import tree_transformer_data_prep
+from Data_Prep.tree_word_char_lstm_data_prep import word_char_prepared_data
+from Data_Prep.tree_transformer_data_prep import transformer_data_prep
 
 from Models.word_char_lstm import LSTM_WORD_CHAR
 from Models.roberta_POS import ROBERTA
@@ -29,19 +30,28 @@ models = {
 }
 
 
-def train_model(path, transformer, model_name, train, dev, test, device):
+def train_model(path, transformer, parent_model, current_model, train, dev, test, device):
 
-    model_class = models[model_name]
+    with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/word2id", "rb") as word2id_fp:   #Pickling
+        word2id = pickle.load(word2id_fp)
+
+    with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/char2id", "rb") as char2id_fp:   #Pickling
+        char2id = pickle.load(char2id_fp)
+
+    with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/label2id", "rb") as label2id_fp:   #Pickling
+        label2id = pickle.load(label2id_fp)
+
+    model_class = models[current_model]
 
     num_layers = 2
     dropout = 0.5
-    num_epochs = 1000
+    num_epochs = 1
 
     optimizers = []
 
     if transformer:
 
-        tensor_dict, num_classes = tree_transformer_data_prep(train, dev, test)
+        tensor_dict, num_classes = transformer_data_prep(train, dev, test)
 
         batches_features_input_train, batches_features_att_train, batches_gold_train = tensor_dict['train']
         batches_features_input_dev, batches_features_att_dev, batches_gold_dev = tensor_dict['dev']
@@ -60,16 +70,19 @@ def train_model(path, transformer, model_name, train, dev, test, device):
 
         optimizers.append(optim.SGD(model.roberta.parameters(), lr = 0.001))
 
-    else:
-        if model_name == "w_lstm":
-            tensor_dict, len_word2id, len_label2id = word_prepared_data(train, dev, test)
+        if parent_model != 'NIL':
+            model.load_state_dict(torch.load(parent_model))
 
+    else:
+        if current_model == "w_lstm":
+
+            tensor_dict = word_prepared_data(train, dev, test, word2id, label2id)
             train_input, train_gold = tensor_dict['train']
             dev_input, dev_gold = tensor_dict['dev']
             test_input_word, test_gold = tensor_dict['test']
 
-            vocab_size = len_word2id
-            num_classes = len_label2id
+            vocab_size = len(word2id)
+            num_classes = len(label2id)
             embedding_size = 300
             hidden_layer_size = 300
             bidirectional = True
@@ -77,9 +90,13 @@ def train_model(path, transformer, model_name, train, dev, test, device):
             
             model = model_class(vocab_size, embedding_size, num_classes, hidden_layer_size, num_layers, dropout, batch_first, bidirectional)
 
-        elif model_name == "w_ch_lstm":
+            if parent_model != 'NIL':
+                model.load_state_dict(torch.load(parent_model))
 
-            tensor_dict, len_w2id, len_char2id, len_lab2id = word_char_prepared_data(train, dev, test)
+        
+        elif current_model == "w_ch_lstm":
+
+            tensor_dict, len_w2id, len_char2id, len_lab2id = word_char_prepared_data(train, dev, test, word2id, char2id, label2id)
 
             train_input_word, train_input_char, train_gold = tensor_dict['train']
             dev_input_word, dev_input_char, dev_gold = tensor_dict['dev']
@@ -95,6 +112,9 @@ def train_model(path, transformer, model_name, train, dev, test, device):
             hidden_layer_size_word = 300
         
             model = model_class(vocab_size, char_size, embedding_size_char, embedding_size_word, num_classes, hidden_layer_size_char, hidden_layer_size_word, num_layers, device, dropout)
+
+            if parent_model != 'NIL':
+                model.load_state_dict(torch.load(parent_model))
 
         optimizers.append(optim.Adadelta(model.parameters()))
     
@@ -122,11 +142,11 @@ def train_model(path, transformer, model_name, train, dev, test, device):
             length = len(batches_features_input_train)
             data = zip(batches_features_input_train, batches_features_att_train, batches_gold_train)
         else:
-            if model_name == "w_ch_lstm":
+            if current_model == "w_ch_lstm":
                 length = len(train_input_word)
                 data = zip(train_input_word, train_input_char, train_gold)
 
-            elif model_name == "w_lstm":
+            elif current_model == "w_lstm":
                 length = len(train_input)
                 data = zip(train_input, [0]*len(train_input), train_gold)
 
@@ -182,11 +202,11 @@ def train_model(path, transformer, model_name, train, dev, test, device):
                 dev_length = len(batches_features_input_dev)
                 dev_data = zip(batches_features_input_dev, batches_features_att_dev, batches_gold_dev)
             else:
-                if model_name == "w_ch_lstm":
+                if current_model == "w_ch_lstm":
                     dev_length = len(dev_input_word)
                     dev_data = zip(dev_input_word, dev_input_char, dev_gold)
 
-                elif model_name == "w_lstm":
+                elif current_model == "w_lstm":
                     dev_length = len(dev_input)
                     dev_data = zip(dev_input, [0]*len(dev_input), dev_gold)
 
@@ -249,10 +269,10 @@ def train_model(path, transformer, model_name, train, dev, test, device):
         if transformer:
             test_data = zip(batches_features_input_test, batches_features_att_test, batches_gold_test)
         else:
-            if model_name == "w_ch_lstm":
+            if current_model == "w_ch_lstm":
                 test_data = zip(test_input_word, test_input_char, test_gold)
 
-            elif model_name == "w_lstm":
+            elif current_model == "w_lstm":
                 test_data = zip(test_input_word, [0]*len(test_input_word), test_gold)
 
         for test_data_1, test_data_2, y_test in test_data:

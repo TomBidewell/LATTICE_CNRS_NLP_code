@@ -15,13 +15,16 @@ from ast import literal_eval
 os.path.join(os.path.dirname(__file__), '../')
 sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 
-from Train_models.train_lstm import w_lstm
 from Models.word_lstm import WORD_LSTM
+from Models.word_char_lstm import LSTM_WORD_CHAR
+from Models.roberta_POS import ROBERTA
 
 
 
 model_dict = {
-    'w_lstm': WORD_LSTM
+    'w_lstm': WORD_LSTM, 
+    'w_ch_lstm': LSTM_WORD_CHAR, 
+    'transformer': ROBERTA
 }
 
 
@@ -47,9 +50,9 @@ counts = {}
 def get_counts(x):
     for w in x:
         try: 
-            counts[w.lower()] += 1
+            counts[w] += 1
         except:
-            counts[w.lower()] = 1
+            counts[w] = 1
 
 df['Sentence'].apply(lambda x: get_counts(x))
 
@@ -59,13 +62,16 @@ word2id = {'PAD': 0,
         'UNK' : 1,
         }
 
+char2id = {'PAD': 0,
+        'UNK' : 1,
+        }
+
 label2id = {'PAD': 0,
         'UNK' : 1,
         }
 
 def create_word_ids(x):
     for token in x:
-        token = token.lower()
         if token not in word2id:
             if counts[token] == 1:
                 word2id[token] = word2id['UNK']
@@ -78,14 +84,23 @@ def create_label_ids(x):
         if label not in label2id:
             label2id[label] = len(label2id)
 
+def create_char_ids(x):
+    for token in x:
+        for c in token:
+            if c not in char2id:
+                char2id[c] = len(char2id)
+
+
 df['Sentence'].apply(lambda x: create_word_ids(x))
+df['Sentence'].apply(lambda x: create_char_ids(x))
 df['POS'].apply(lambda x: create_label_ids(x))
 
 
 with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/word2id", "wb") as word2id_fp:   #Pickling
     pickle.dump(word2id, word2id_fp)
 
-
+with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/char2id", "wb") as char2id_fp:   #Pickling
+    pickle.dump(char2id, char2id_fp)
 
 with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/label2id", "wb") as label2id_fp:   #Pickling
     pickle.dump(label2id, label2id_fp)
@@ -129,16 +144,16 @@ for k, v in sorted(trains.items(), reverse= True):
         continue
 
     if str(k[1]) == str(root_id) and str(k[2]) == str(root_id):
-        for mod in [w_lstm]:    #, 'transf']:
+        for mod in ['w_lstm']:     #['w_lstm', 'w_ch_lstm', 'transformer']:    
             todo.append((k, v, devs[k], tests[k], mod))
 
         
     elif str(k[1]) == str(root_id) and str(k[2]) != str(root_id):
-        for mod in [w_lstm]:   
+        for mod in ['w_lstm']: #['w_lstm', 'w_ch_lstm', 'transformer']:   
                 children[k[0], k[2], mod] = []
 
     else:
-        for mod in [w_lstm]:      #, 'transf']:
+        for mod in ['w_lstm']: #['w_lstm', 'w_ch_lstm', 'transformer']:      #, 'transf']:
             children[k[0], k[1], mod].append((k, v, devs[k], tests[k], mod))
             children[k[0], k[2], mod] = []
 
@@ -154,6 +169,8 @@ running = {'0':-1, '1':-1}# these are the two gpus on atropos
 #running = {'1':-1}
 procs = {}
 done = set()
+
+number_of_repeats = str(1)
 
 
 
@@ -177,7 +194,7 @@ while todo != [] or len(children) != 0:
                 this = bits[0] + '_' + bits[-1]
                 parent = '_'.join(bits[:2])
 
-                destination = directory + "/" + train.split('/')[-2] + "/" + mod.__name__
+                destination = directory + "/" + train.split('/')[-2] + "/" + mod
 
                 for file in os.listdir(directory):
                     if str(k[1]) == str(file.split("_")[-1]):
@@ -186,10 +203,10 @@ while todo != [] or len(children) != 0:
                 if str(bits[1]) == str(root_id) and str(bits[2]) == str(root_id):  #i.e we're at the root node
                     parent_model = 'NIL'
                 else:
-                    model_name = model_dict[mod.__name__]
-                    parent_model = directory + "/" + parent_folder + "/" + mod.__name__ + "/" + model_name.__name__
+                    model_name = model_dict[mod]
+                    parent_model = directory + "/" + parent_folder + "/" + mod + "/" + model_name.__name__
 
-                execlp('python3.9', 'python3.9', '/home/tbidewell/home/POS_tagging/code/scripts/Tree/Run/run_tree.py', destination, mod.__name__, parent_model, train, dev, test, gpu)
+                execlp('python3.9', 'python3.9', '/home/tbidewell/home/POS_tagging/code/scripts/Tree/Run/run_tree.py', destination, mod, parent_model, train, dev, test, gpu, number_of_repeats)
                 exit()
             
             else:

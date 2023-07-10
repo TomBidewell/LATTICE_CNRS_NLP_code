@@ -16,11 +16,13 @@ def w_lstm(path, parent_model, train, dev, test, device):
     with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/word2id", "rb") as word2id_fp:   #Pickling
         word2id = pickle.load(word2id_fp)
 
+    with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/char2id", "rb") as char2id_fp:   #Pickling
+        char2id = pickle.load(char2id_fp)
+
     with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/label2id", "rb") as label2id_fp:   #Pickling
         label2id = pickle.load(label2id_fp)
 
-    print("len word2id:" , len(word2id))
-    print("len label2id: ", len(label2id))
+
 
     tensor_dict = word_prepared_data(train, dev, test, word2id, label2id)
 
