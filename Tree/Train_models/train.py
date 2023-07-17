@@ -17,20 +17,23 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 from Data_Prep.tree_word_lstm_data_prep import word_prepared_data
 from Data_Prep.tree_word_char_lstm_data_prep import word_char_prepared_data
 from Data_Prep.tree_transformer_data_prep import transformer_data_prep
+from Data_Prep.cnn_data_prep import cnn_prepared_data
 
 from Models.word_char_lstm import LSTM_WORD_CHAR
 from Models.roberta_POS import ROBERTA
 from Models.word_lstm import WORD_LSTM
+from Models.CNN_model import CNN
 
 
 models = {
     "w_lstm": WORD_LSTM, 
     "w_ch_lstm": LSTM_WORD_CHAR, 
-    "transformer": ROBERTA
+    "transformer": ROBERTA, 
+    "cnn": CNN
 }
 
 
-def train_model(path, transformer, parent_model, current_model, train, dev, test, device):
+def train_model(path, cnn, transformer, parent_model, current_model, train, dev, test, device):
 
     with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/word2id", "rb") as word2id_fp:   #Pickling
         word2id = pickle.load(word2id_fp)
@@ -49,74 +52,101 @@ def train_model(path, transformer, parent_model, current_model, train, dev, test
 
     optimizers = []
 
-    if transformer:
+    if cnn:
+        tensor_dict, len_word2id, len_label2id = cnn_prepared_data(train, dev, test, word2id, label2id)
+        train_input, train_gold = tensor_dict['train']
+        dev_input, dev_gold = tensor_dict['dev']
+        test_input_word, test_gold = tensor_dict['test']
+        
+        len_word = len_word2id
+        num_classes = len_label2id
+        emb_size = 300
+        hidden_size = 500
 
-        tensor_dict, num_classes = transformer_data_prep(train, dev, test)
-
-        batches_features_input_train, batches_features_att_train, batches_gold_train = tensor_dict['train']
-        batches_features_input_dev, batches_features_att_dev, batches_gold_dev = tensor_dict['dev']
-        batches_features_input_test, batches_features_att_test, batches_gold_test = tensor_dict['test']
-
-        hidden_layer_size = 500
-
-        pre_trained_model =  XLMRobertaModel.from_pretrained('xlm-roberta-base')
-        pre_trained_model.to(device)
-
-        model = ROBERTA(num_classes, hidden_layer_size) 
-
-        optimizers.append(optim.Adadelta(model.parameters()))
-
-        model.roberta = pre_trained_model
-
-        optimizers.append(optim.SGD(model.roberta.parameters(), lr = 0.001))
+        model = CNN(len_word, emb_size, num_classes, hidden_size, dropout)
 
         if parent_model != 'NIL':
+                #print("Using Parent Model")
             model.load_state_dict(torch.load(parent_model))
 
+        optimizers.append(optim.Adadelta(model.parameters())) 
+    
     else:
-        if current_model == "w_lstm":
 
-            tensor_dict = word_prepared_data(train, dev, test, word2id, label2id)
-            train_input, train_gold = tensor_dict['train']
-            dev_input, dev_gold = tensor_dict['dev']
-            test_input_word, test_gold = tensor_dict['test']
+        if transformer:
 
-            vocab_size = len(word2id)
-            num_classes = len(label2id)
-            embedding_size = 300
-            hidden_layer_size = 300
-            bidirectional = True
-            batch_first = True
+            tensor_dict, num_classes = transformer_data_prep(train, dev, test, label2id)
+
+            batches_features_input_train, batches_features_att_train, batches_gold_train = tensor_dict['train']
+            batches_features_input_dev, batches_features_att_dev, batches_gold_dev = tensor_dict['dev']
+            batches_features_input_test, batches_features_att_test, batches_gold_test = tensor_dict['test']
+
+            hidden_layer_size = 500
+
+            pre_trained_model =  XLMRobertaModel.from_pretrained('xlm-roberta-base')
+            pre_trained_model.to(device)
+
+            model = ROBERTA(num_classes, hidden_layer_size) 
+
+            optimizers.append(optim.Adadelta(model.parameters()))
+
+            model.roberta = pre_trained_model
+
+            optimizers.append(optim.SGD(model.roberta.parameters(), lr = 0.001))
+
+            if parent_model != 'NIL':
+                #print("Using Parent Model")
+                model.load_state_dict(torch.load(parent_model))
+
+        else:
+            if current_model == "w_lstm":
+                tensor_dict = word_prepared_data(train, dev, test, word2id, label2id)
+                train_input, train_gold = tensor_dict['train']
+                dev_input, dev_gold = tensor_dict['dev']
+                test_input_word, test_gold = tensor_dict['test']
+
+                vocab_size = len(word2id)
+                num_classes = len(label2id)
+                embedding_size = 300
+                hidden_layer_size = 300
+                bidirectional = True
+                batch_first = True
+                
+                model = model_class(vocab_size, embedding_size, num_classes, hidden_layer_size, num_layers, dropout, batch_first, bidirectional)
+
+                if parent_model != 'NIL':
+                    print("Using Parent Model")
+                    model.load_state_dict(torch.load(parent_model))    
+
+                optimizers.append(optim.Adadelta(model.parameters()))
+
             
-            model = model_class(vocab_size, embedding_size, num_classes, hidden_layer_size, num_layers, dropout, batch_first, bidirectional)
+            elif current_model == "w_ch_lstm":
 
-            if parent_model != 'NIL':
-                model.load_state_dict(torch.load(parent_model))
+                tensor_dict, len_w2id, len_char2id, len_lab2id = word_char_prepared_data(train, dev, test, word2id, char2id, label2id)
 
-        
-        elif current_model == "w_ch_lstm":
-
-            tensor_dict, len_w2id, len_char2id, len_lab2id = word_char_prepared_data(train, dev, test, word2id, char2id, label2id)
-
-            train_input_word, train_input_char, train_gold = tensor_dict['train']
-            dev_input_word, dev_input_char, dev_gold = tensor_dict['dev']
-            test_input_word, test_input_char, test_gold = tensor_dict['test']
+                train_input_word, train_input_char, train_gold = tensor_dict['train']
+                dev_input_word, dev_input_char, dev_gold = tensor_dict['dev']
+                test_input_word, test_input_char, test_gold = tensor_dict['test']
 
 
-            vocab_size = len_w2id
-            char_size = len_char2id
-            num_classes = len_lab2id
-            embedding_size_char = 100
-            embedding_size_word = 300
-            hidden_layer_size_char = 100
-            hidden_layer_size_word = 300
-        
-            model = model_class(vocab_size, char_size, embedding_size_char, embedding_size_word, num_classes, hidden_layer_size_char, hidden_layer_size_word, num_layers, device, dropout)
+                vocab_size = len_w2id
+                char_size = len_char2id
+                num_classes = len_lab2id
+                embedding_size_char = 100
+                embedding_size_word = 300
+                hidden_layer_size_char = 100
+                hidden_layer_size_word = 300
+            
+                model = model_class(vocab_size, char_size, embedding_size_char, embedding_size_word, num_classes, hidden_layer_size_char, hidden_layer_size_word, num_layers, device, dropout)
 
-            if parent_model != 'NIL':
-                model.load_state_dict(torch.load(parent_model))
+                if parent_model != 'NIL':
+                    print("Using Parent Model")
+                    model.load_state_dict(torch.load(parent_model))    
 
-        optimizers.append(optim.Adadelta(model.parameters()))
+                optimizers.append(optim.Adadelta(model.parameters()))
+
+            
     
     model.to(device)
 
@@ -131,7 +161,7 @@ def train_model(path, transformer, parent_model, current_model, train, dev, test
     epoch_accuracy_dev = []
 
     # loop on epochs
-    for epoch in range(num_epochs):
+    for epoch in tqdm(range(num_epochs), total = num_epochs, desc = 'Train Model: '):
         #print("Epoch", epoch)
         epoch_loss = 0
 
@@ -146,12 +176,11 @@ def train_model(path, transformer, parent_model, current_model, train, dev, test
                 length = len(train_input_word)
                 data = zip(train_input_word, train_input_char, train_gold)
 
-            elif current_model == "w_lstm":
+            elif current_model == "w_lstm" or current_model == "cnn":
                 length = len(train_input)
                 data = zip(train_input, [0]*len(train_input), train_gold)
 
-        for data_1, data_2, y in tqdm(data, total = length, desc = 'Train: '):
-
+        for data_1, data_2, y in data:
             data_1 = data_1.to(device)
 
             if isinstance(data_2, int) == False: #i.e word and char
@@ -168,10 +197,9 @@ def train_model(path, transformer, parent_model, current_model, train, dev, test
                 log_probs = model(data_1, data_2)
 
             log_probs = log_probs.transpose(1, 2)
-
             loss = loss_function(log_probs, y) 
             
-            epoch_loss += loss
+            epoch_loss += loss.item()
 
             loss.backward() 
 
@@ -206,12 +234,12 @@ def train_model(path, transformer, parent_model, current_model, train, dev, test
                     dev_length = len(dev_input_word)
                     dev_data = zip(dev_input_word, dev_input_char, dev_gold)
 
-                elif current_model == "w_lstm":
+                elif current_model == "w_lstm" or current_model == "cnn":
                     dev_length = len(dev_input)
                     dev_data = zip(dev_input, [0]*len(dev_input), dev_gold)
 
-            for dev_data_1, dev_data_2, y_dev in tqdm(dev_data, total = dev_length, desc='Dev: '):
-
+            for dev_data_1, dev_data_2, y_dev in dev_data:
+                #print(dev_data_1.shape)
                 dev_data_1 = dev_data_1.to(device)
 
                 if isinstance(dev_data_2, int) == False:
@@ -229,9 +257,11 @@ def train_model(path, transformer, parent_model, current_model, train, dev, test
                 # total loss on the dev set
                 dev_loss = loss_function(log_dev_probs, y_dev)
 
-                dev_loss_all += dev_loss
+                dev_loss_all += dev_loss.item()
 
                 mask_dev = (y_dev != -100)
+
+                #print(log_dev_probs.shape)
 
                 num_pred_dev += mask_dev.int().sum().item()
 
@@ -272,7 +302,7 @@ def train_model(path, transformer, parent_model, current_model, train, dev, test
             if current_model == "w_ch_lstm":
                 test_data = zip(test_input_word, test_input_char, test_gold)
 
-            elif current_model == "w_lstm":
+            elif current_model == "w_lstm" or current_model ==  "cnn":
                 test_data = zip(test_input_word, [0]*len(test_input_word), test_gold)
 
         for test_data_1, test_data_2, y_test in test_data:
@@ -297,7 +327,7 @@ def train_model(path, transformer, parent_model, current_model, train, dev, test
             # total loss on the dev set
             test_loss = loss_function(log_test_probs, y_test)
 
-            test_loss_all += test_loss
+            test_loss_all += test_loss.item()
 
             mask_test = (y_test != -100)
 

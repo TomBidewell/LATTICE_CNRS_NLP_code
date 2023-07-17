@@ -13,13 +13,33 @@ def word_prepared_data(train, dev, test, word2id, label2id):
         
     df_train = pd.read_csv(train, header = None)
     df_train.columns = ['Sentence', 'PoS']
+    df_train.Sentence = df_train.Sentence.apply(literal_eval)
+    df_train.PoS = df_train.PoS.apply(literal_eval)
 
 
     df_dev = pd.read_csv(dev, header = None)
     df_dev.columns = ['Sentence', 'PoS']
+    df_dev.Sentence = df_dev.Sentence.apply(literal_eval)
+    df_dev.PoS = df_dev.PoS.apply(literal_eval)
 
     df_test = pd.read_csv(test, header = None)
     df_test.columns = ['Sentence', 'PoS']
+    df_test.Sentence = df_test.Sentence.apply(literal_eval)
+    df_test.PoS = df_test.PoS.apply(literal_eval)
+
+    def convert_dataframe(df):
+        df_new = pd.DataFrame(columns=['Sentence', 'PoS'])
+
+        for idx in df.index:
+            for i, j in zip(df['Sentence'][idx], df['PoS'][idx]):
+                new_row = {'Sentence': [i], 'PoS': [j]}
+                df_new = pd.concat([df_new, pd.DataFrame.from_dict(new_row)])
+        
+        return df_new
+    
+    df_train = convert_dataframe(df_train)
+    df_dev = convert_dataframe(df_dev)
+    df_test = convert_dataframe(df_test)
 
 
     #encoding sentences and PoS tags

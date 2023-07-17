@@ -13,12 +13,32 @@ def word_char_prepared_data(train, dev, test, word2id, char2id, label2id):
     #load data and take a small portion for setting up architecture
     df_train = pd.read_csv(train, header = None)
     df_train.columns = ['Sentence', 'PoS']
+    df_train.Sentence = df_train.Sentence.apply(literal_eval)
+    df_train.PoS = df_train.PoS.apply(literal_eval)
 
     df_dev = pd.read_csv(dev, header = None)
     df_dev.columns = ['Sentence', 'PoS']
+    df_dev.Sentence = df_dev.Sentence.apply(literal_eval)
+    df_dev.PoS = df_dev.PoS.apply(literal_eval)
 
     df_test = pd.read_csv(test, header = None)
     df_test.columns = ['Sentence', 'PoS']
+    df_test.Sentence = df_test.Sentence.apply(literal_eval)
+    df_test.PoS = df_test.PoS.apply(literal_eval)
+
+    def convert_dataframe(df):
+        df_new = pd.DataFrame(columns=['Sentence', 'PoS'])
+
+        for idx in df.index:
+            for i, j in zip(df['Sentence'][idx], df['PoS'][idx]):
+                new_row = {'Sentence': [i], 'PoS': [j]}
+                df_new = pd.concat([df_new, pd.DataFrame.from_dict(new_row)])
+        
+        return df_new
+    
+    df_train = convert_dataframe(df_train)
+    df_dev = convert_dataframe(df_dev)
+    df_test = convert_dataframe(df_test)
 
 
     #encoding sentences and PoS tags
@@ -94,7 +114,6 @@ def word_char_prepared_data(train, dev, test, word2id, char2id, label2id):
 
     df_test[['Encoded_Sentence_Word', 'Encoded_Sentence_Char','Encoded_PoS']] = df_test.apply(lambda x: encoding(x.Sentence, x.PoS), axis = 1, result_type="expand")
 
-  
 
     seq_len = []
 
@@ -199,8 +218,7 @@ def word_char_prepared_data(train, dev, test, word2id, char2id, label2id):
                 batch_input_data_char.append(torch.tensor(item[1]))
                 batch_gold_class_data.append(torch.tensor(item[2]))
                 
-            k = 33
-
+            k = 1
 
             for i in range(0, len(batch_input_data_word), k):
                 tensor_batch_input_data_word = torch.stack(batch_input_data_word[i : i+k])  

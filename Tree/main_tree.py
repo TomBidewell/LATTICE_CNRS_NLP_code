@@ -18,24 +18,26 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 from Models.word_lstm import WORD_LSTM
 from Models.word_char_lstm import LSTM_WORD_CHAR
 from Models.roberta_POS import ROBERTA
+from Models.CNN_model import CNN
 
 
 
 model_dict = {
     'w_lstm': WORD_LSTM, 
     'w_ch_lstm': LSTM_WORD_CHAR, 
-    'transformer': ROBERTA
+    'transformer': ROBERTA, 
+    'cnn': CNN
 }
 
 
-with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/data_per_lang_trial", "rb") as fp_tree:
+with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/data_per_lang", "rb") as fp_tree:
     data_per_lang = pickle.load(fp_tree)
 
 
-with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/linkage_matrix_trial", "rb") as fp_tree:
+with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/linkage_matrix", "rb") as fp_tree:
     link_mat = pickle.load(fp_tree)
 
-with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/id2lang_trial", "rb") as fp_id2lang:
+with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/id2lang", "rb") as fp_id2lang:
     id2lang = pickle.load(fp_id2lang)
 
 
@@ -110,7 +112,7 @@ root, _ = to_tree(link_mat, rd=True)
 
 #get id2word etc
 
-directory = '/home/tbidewell/home/POS_tagging/Data/Tree_Trial'
+directory = '/home/tbidewell/home/POS_tagging/Data/Tree'
 
 root_id = root.get_id()
 
@@ -144,20 +146,15 @@ for k, v in sorted(trains.items(), reverse= True):
         continue
 
     if str(k[1]) == str(root_id) and str(k[2]) == str(root_id):
-        for mod in ['w_lstm']:     #['w_lstm', 'w_ch_lstm', 'transformer']:    
+        for mod in ['w_lstm', 'w_ch_lstm', 'transformer', 'cnn']:    
             todo.append((k, v, devs[k], tests[k], mod))
-
-        
-    elif str(k[1]) == str(root_id) and str(k[2]) != str(root_id):
-        for mod in ['w_lstm']: #['w_lstm', 'w_ch_lstm', 'transformer']:   
-                children[k[0], k[2], mod] = []
+            children[k[0], k[1], mod] = [(k, v, devs[k], tests[k], mod)]
 
     else:
-        for mod in ['w_lstm']: #['w_lstm', 'w_ch_lstm', 'transformer']:      #, 'transf']:
+        for mod in ['w_lstm', 'w_ch_lstm', 'transformer', 'cnn']:     
             children[k[0], k[1], mod].append((k, v, devs[k], tests[k], mod))
             children[k[0], k[2], mod] = []
 
- 
 
 for k, v in sorted(children.items()):
     if len(v) == 0:
@@ -170,9 +167,7 @@ running = {'0':-1, '1':-1}# these are the two gpus on atropos
 procs = {}
 done = set()
 
-number_of_repeats = str(1)
-
-
+number_of_repeats = str(5)
 
 
 while todo != [] or len(children) != 0:
@@ -194,7 +189,7 @@ while todo != [] or len(children) != 0:
                 this = bits[0] + '_' + bits[-1]
                 parent = '_'.join(bits[:2])
 
-                destination = directory + "/" + train.split('/')[-2] + "/" + mod
+                destination = directory + "/" + train.split('/')[-2]
 
                 for file in os.listdir(directory):
                     if str(k[1]) == str(file.split("_")[-1]):

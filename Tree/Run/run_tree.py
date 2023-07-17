@@ -14,8 +14,8 @@ from Train_models.train import train_model
 from tqdm import tqdm
 from argparse import ArgumentParser
 
-seed(5)
-manual_seed(5)
+seed(2)
+manual_seed(2)
 
 ap = ArgumentParser()
 ap.add_argument('destination', help='Path to where metrics are stored file.')
@@ -31,9 +31,13 @@ args = ap.parse_args()
 device = torch.device(int(args.device))
 
 use_transformer = False
+use_cnn = False
+
 
 if args.current_model == "transformer":
     use_transformer = True
+elif args.current_model == "cnn":
+    use_cnn = True
 
 
 path = Path(args.destination + "/" + args.current_model)
@@ -49,8 +53,10 @@ all_epoch_accuracy_dev = []
 all_test_loss_all = [] 
 all_test_accuracy_all = []
 
+
+
 for i in tqdm(range(int(args.number_of_repeats)), total = int(args.number_of_repeats), desc = 'Repetitions: '):
-    epoch_losses_train, epoch_accuracy_train, epoch_losses_dev, epoch_accuracy_dev, test_loss_all, test_accuracy_all = train_model(path, use_transformer, args.parent_model, args.current_model, args.train, args.dev, args.test, device)
+    epoch_losses_train, epoch_accuracy_train, epoch_losses_dev, epoch_accuracy_dev, test_loss_all, test_accuracy_all = train_model(path, use_cnn, use_transformer, args.parent_model, args.current_model, args.train, args.dev, args.test, device)
     all_epoch_losses_train.append(epoch_losses_train)
     all_epoch_accuracy_train.append(epoch_accuracy_train)
     all_epoch_losses_dev.append(epoch_losses_dev)
@@ -89,3 +95,4 @@ with open(args.destination + "/" + args.current_model + "/" + "test_accuracy_all
     write = csv.writer(f)
     write.writerow(["Accuracy"])
     write.writerows(all_test_accuracy_all)
+

@@ -13,17 +13,15 @@ from tqdm import tqdm
 os.path.join(os.path.dirname(__file__), '../')
 sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 
-from All_languages.Models.roberta_POS import ROBERTA
 
 
-
-with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/linkage_matrix_trial", "rb") as fp_tree:
+with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/linkage_matrix", "rb") as fp_tree:
     link_mat = pickle.load(fp_tree)
 
-with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/id2lang_trial", "rb") as fp_id2lang:
+with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/id2lang", "rb") as fp_id2lang:
     id2lang = pickle.load(fp_id2lang)
 
-with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/lang_dict_trial", "rb") as fp_lang_dict:
+with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/lang_dict", "rb") as fp_lang_dict:
     lang_dict = pickle.load(fp_lang_dict)
 
 
@@ -31,7 +29,7 @@ with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/lang
 root, _ = to_tree(link_mat, rd=True)
 
 
-directory = "/home/tbidewell/home/POS_tagging/Data/Tree_Trial"
+directory = "/home/tbidewell/home/POS_tagging/Data/Tree"
 
 
 
@@ -197,5 +195,5 @@ get_list_leaves(root, root_id)
 
 
 
-with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/data_per_lang", "wb") as d_per_lang:   #Pickling
+with open("/home/tbidewell/home/POS_tagging/code/scripts/Tree/Pickled_Files/data_per_lang", "wb") as d_per_lang:   #Pickling
     pickle.dump(data_per_lang, d_per_lang)
