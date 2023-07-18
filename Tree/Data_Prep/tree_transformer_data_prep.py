@@ -131,7 +131,7 @@ def transformer_data_prep(train, dev, test, label2id):
 
 
     #split training into batches
-    BATCH_SIZE = 1
+    BATCH_SIZE = 50
 
 
     def split_into_batches(features, golds):

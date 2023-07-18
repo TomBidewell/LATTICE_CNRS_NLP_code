@@ -218,7 +218,7 @@ def word_char_prepared_data(train, dev, test, word2id, char2id, label2id):
                 batch_input_data_char.append(torch.tensor(item[1]))
                 batch_gold_class_data.append(torch.tensor(item[2]))
                 
-            k = 1
+            k = 50
 
             for i in range(0, len(batch_input_data_word), k):
                 tensor_batch_input_data_word = torch.stack(batch_input_data_word[i : i+k])  

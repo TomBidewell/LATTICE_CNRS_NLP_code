@@ -48,7 +48,7 @@ def train_model(path, cnn, transformer, parent_model, current_model, train, dev,
 
     num_layers = 2
     dropout = 0.5
-    num_epochs = 1
+    num_epochs = 1000
 
     optimizers = []
 

@@ -178,7 +178,7 @@ def word_prepared_data(train, dev, test, word2id, label2id):
                 batch_input_data.append(torch.tensor(item[0]))
                 batch_gold_class_data.append(torch.tensor(item[1]))
             
-            k = 1
+            k = 50
 
             for i in range(0, len(batch_input_data), k):
             

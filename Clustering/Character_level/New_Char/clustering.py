@@ -5,14 +5,15 @@ from scipy.cluster.hierarchy import linkage, dendrogram
 import matplotlib.pyplot as plt
 import pickle
 
-lang_embeds = torch.load("lang_embeds.pt")
+lang_embeds = torch.load("/home/tbidewell/home/POS_tagging/code/scripts/Clustering/Character_level/Pickled_Files/lang_embeds.pt")
 
-with open("lang2id", "rb") as lang2id_fp:   #Pickling
+with open("/home/tbidewell/home/POS_tagging/code/scripts/Clustering/Character_level/Pickled_Files/lang2id", "rb") as lang2id_fp:   #Pickling
     lang2id = pickle.load(lang2id_fp)
 
-with open("id2lang", "rb") as id2lang_fp:   #Pickling
-    id2lang = pickle.load(id2lang_fp)
+id2lang = []
 
+for key, id in lang2id.items():
+    id2lang.insert(id, key)
 
 
 lang_embeds = lang_embeds.cpu().detach().numpy()
@@ -20,8 +21,11 @@ lang_embeds = lang_embeds.cpu().detach().numpy()
 #remove UNK token
 lang_embeds = np.delete(lang_embeds, lang2id['UNK'], axis = 0)
 
+id2lang.remove('UNK')
+
+
 # Perform hierarchical clustering using the linkage function=
-X = linkage(lang_embeds, metric='cosine')  # You can try different linkage methods
+X = linkage(lang_embeds, metric='cosine')  
 
 # Plot the dendrogram
 plt.figure(figsize=(10, 6))
