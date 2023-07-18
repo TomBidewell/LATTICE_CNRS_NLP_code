@@ -29,4 +29,4 @@ class NEXTCHAR(nn.Module):
         out, _ = self.lstm(out)
         out = self.relu(self.linear_1(out))
         out = self.linear_2(out)
-        return F.softmax(out, dim = -1)
+        return F.log_softmax(out, dim = -1)

@@ -10,7 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 
 from torch import manual_seed
 from random import seed
-from train import train_model
+from Clustering.Character_level.New_Char.char_gen_clust_train import train_model
 from tqdm import tqdm
 from argparse import ArgumentParser
 import pickle

@@ -9,7 +9,7 @@ from os import execlp, fork, wait
 os.path.join(os.path.dirname(__file__), '../')
 sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 
-from run import run_model
+from Clustering.Character_level.New_Char.char_gen_clust_run import run_model
 
 
 def load_conllu(filename):

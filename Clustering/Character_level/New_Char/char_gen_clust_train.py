@@ -14,9 +14,8 @@ import pandas as pd
 os.path.join(os.path.dirname(__file__), '../')
 sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 
-from data_prep import prepared_data, prepared_all_data, prepared_data_other
-from model import NEXTCHAR
-
+from Clustering.Character_level.New_Char.char_gen_clust_data_prep import prepared_data, prepared_all_data, prepared_data_other
+from Clustering.Character_level.New_Char.char_gen_clust_model import NEXTCHAR
 
 
 def train_model(todo, device):
