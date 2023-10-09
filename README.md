@@ -12,3 +12,5 @@ I applied Multi-Task Learning to evolutionary language trees for Part of Speech 
 
 "Clustering": stores the code for generating two evolutionary trees using a Hierarchical Agglomerative Clustering aglorithm. One embeds languages using a Bag of Words representation for PoS trigrams from each language's dataset (reducing dimensionality by using SVD Decomposition). The second uses embeddings learnt through using an LSTM based next character generation model. Each character was concatenated with the character's respective language embedding before being fed into the LSTM. 
 
+This internship significantly enhanced my skills in PyTorch, Python, parallelisation, multi-GPU usage, Linux, and independent research.
+
